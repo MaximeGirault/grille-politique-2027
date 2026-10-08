@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<tv source-info-name="XML TV Fr" generator-info-name="XML TV Fr">
+  <channel id="France2.fr">
+    <display-name>France 2</display-name>
+  </channel>
+  <programme start="20270315210000 +0100" stop="20270315230000 +0100" channel="France2.fr">
+    <title lang="fr">Le grand débat</title>
+  </programme>
+</tv>

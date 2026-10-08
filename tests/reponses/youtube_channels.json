@@ -1,0 +1,13 @@
+{
+  "kind": "youtube#channelListResponse",
+  "etag": "exemple",
+  "pageInfo": {"totalResults": 1, "resultsPerPage": 5},
+  "items": [
+    {
+      "kind": "youtube#channel",
+      "etag": "exemple",
+      "id": "UChdZt5gOhGQqVBHbw0cYVtw",
+      "contentDetails": {"relatedPlaylists": {"likes": "", "uploads": "UUhdZt5gOhGQqVBHbw0cYVtw"}}
+    }
+  ]
+}
