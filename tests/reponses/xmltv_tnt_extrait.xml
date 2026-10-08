@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tv SYSTEM "xmltv.dtd">
+<!-- Extrait RECONSTITUÉ au format XMLTV de xmltvfr.fr (accès réseau bloqué au lot 2).
+     À remplacer par un vrai extrait : voir tests/reponses/LISEZMOI.md. -->
+<tv source-info-name="XML TV Fr" generator-info-name="XML TV Fr">
+  <channel id="TF1.fr"><display-name>TF1</display-name></channel>
+  <channel id="France2.fr"><display-name>France 2</display-name></channel>
+  <channel id="France3.fr"><display-name>France 3</display-name></channel>
+  <channel id="France5.fr"><display-name>France 5</display-name></channel>
+  <channel id="Arte.fr"><display-name>Arte</display-name></channel>
+  <channel id="BFMTV.fr"><display-name>BFMTV</display-name></channel>
+  <channel id="LaChaineParlementaire.fr"><display-name>LCP</display-name></channel>
+  <channel id="Gulli.fr"><display-name>Gulli</display-name></channel>
+
+  <!-- Terminée avant « maintenant » (15 mars 2027, 10 h) : ignorée -->
+  <programme start="20270315080000 +0100" stop="20270315090000 +0100" channel="France2.fr">
+    <title lang="fr">Débat matinal</title>
+  </programme>
+  <!-- En cours : retenue par mot-clé « présidentielle », statut en direct -->
+  <programme start="20270315093000 +0100" stop="20270315110000 +0100" channel="France5.fr">
+    <title lang="fr">C dans l'air</title>
+    <desc lang="fr">La campagne présidentielle s'accélère.</desc>
+    <category lang="fr">Magazine</category>
+  </programme>
+  <!-- Non politique -->
+  <programme start="20270315200000 +0100" stop="20270315204000 +0100" channel="TF1.fr">
+    <title lang="fr">Le 20H</title>
+    <desc lang="fr">Le journal de la rédaction.</desc>
+  </programme>
+  <!-- Mot trop large retiré de la liste : pas retenue -->
+  <programme start="20270315211000 +0100" stop="20270315230000 +0100" channel="TF1.fr">
+    <title lang="fr">Koh-Lanta</title>
+    <desc lang="fr">Les candidats affrontent l'épreuve de confort.</desc>
+  </programme>
+  <!-- Parti ambigu (« Renaissance ») : pas retenue sans autre indice -->
+  <programme start="20270315205500 +0100" stop="20270315220000 +0100" channel="Arte.fr">
+    <title lang="fr">La Renaissance italienne</title>
+    <desc lang="fr">Documentaire sur Florence au XVe siècle.</desc>
+  </programme>
+  <!-- Mot-clé « débat » + deux personnalités repérées -->
+  <programme start="20270315210000 +0100" stop="20270315230000 +0100" channel="France2.fr">
+    <title lang="fr">Le grand débat</title>
+    <sub-title lang="fr">Spécial présidentielle</sub-title>
+    <desc lang="fr">Jean-Luc Mélenchon face à Jordan Bardella.</desc>
+  </programme>
+  <!-- Nom de candidat seul : retenue, catégorie interview -->
+  <programme start="20270315190000 +0100" stop="20270315200000 +0100" channel="BFMTV.fr">
+    <title lang="fr">BFM Politique</title>
+    <desc lang="fr">Gabriel Attal est l'invité de l'émission.</desc>
+  </programme>
+  <!-- Chaîne en liste blanche : tout est retenu -->
+  <programme start="20270315220000 +0100" stop="20270315230000 +0100" channel="LaChaineParlementaire.fr">
+    <title lang="fr">Documentaire</title>
+    <desc lang="fr">Un portrait de l'Assemblée.</desc>
+  </programme>
+  <!-- Émission en liste blanche, le lendemain -->
+  <programme start="20270316074000 +0100" stop="20270316080000 +0100" channel="France2.fr">
+    <title lang="fr">Les Quatre Vérités</title>
+    <desc lang="fr">Invité : Bruno Retailleau.</desc>
+  </programme>
+  <!-- Dernier jour de l'horizon (22 mars), heure d'hiver -->
+  <programme start="20270322201000 +0100" stop="20270322220000 +0100" channel="France3.fr">
+    <title lang="fr">Meeting de campagne</title>
+    <desc lang="fr">Discours de Marine Le Pen à Perpignan.</desc>
+  </programme>
+  <!-- Au-delà de l'horizon (23 mars) : ignorée -->
+  <programme start="20270323210000 +0100" stop="20270323230000 +0100" channel="France3.fr">
+    <title lang="fr">Débat régional</title>
+  </programme>
+  <!-- Chaîne non configurée : ignorée -->
+  <programme start="20270315210000 +0100" stop="20270315220000 +0100" channel="Gulli.fr">
+    <title lang="fr">Débat junior</title>
+  </programme>
+</tv>

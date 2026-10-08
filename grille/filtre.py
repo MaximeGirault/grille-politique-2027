@@ -1,0 +1,89 @@
+"""Filtre politique : liste blanche, puis mots-clés (le classement par modèle viendra au lot 6).
+
+La comparaison ignore majuscules, accents et ponctuation, et se fait mot à mot :
+« Attal » trouve « Gabriel Attal, invité » mais pas « Attalens ».
+"""
+
+from __future__ import annotations
+
+import re
+import unicodedata
+from dataclasses import dataclass, field
+
+from grille.config import Chaine, Configuration
+
+LISTE_BLANCHE = "liste blanche"
+MOTS_CLES = "mots-clés"
+
+# Indices de catégorie, cherchés dans le titre puis la description (formes normalisées).
+_INDICES_CATEGORIE = [
+    ("débat", ["debat", "debats", "face a face", "duel", "entre deux tours"]),
+    ("meeting", ["meeting", "discours", "declaration", "conference de presse", "allocution", "voeux"]),
+    ("interview", ["interview", "entretien", "invite", "invitee", "l invite", "grand jury", "questions politiques",
+                   "les quatre verites", "face aux francais"]),
+]
+
+
+def normaliser(texte: str) -> str:
+    """Minuscules, sans accents ni ponctuation, mots séparés par une espace."""
+    sans_accents = unicodedata.normalize("NFKD", texte or "")
+    sans_accents = "".join(c for c in sans_accents if not unicodedata.combining(c))
+    return " ".join(re.sub(r"[^0-9a-z]+", " ", sans_accents.lower()).split())
+
+
+def _contient(texte_normalise: str, terme_normalise: str) -> bool:
+    return bool(terme_normalise) and f" {terme_normalise} " in f" {texte_normalise} "
+
+
+@dataclass
+class Decision:
+    filtre: str  # LISTE_BLANCHE ou MOTS_CLES
+    categorie: str
+    invites: list[str] = field(default_factory=list)
+    motif: str = ""  # ce qui a déclenché le filtre, pour comprendre un faux positif
+
+
+class FiltrePolitique:
+    def __init__(self, config: Configuration):
+        lb = config.liste_blanche
+        self._chaines_blanches = {normaliser(n) for n in lb.get("chaines") or []}
+        self._categories_blanches = [normaliser(c) for c in lb.get("categories_de_chaine") or []]
+        self._emissions_blanches = {normaliser(e) for e in lb.get("emissions") or []}
+        self._mots = [(m, normaliser(m)) for m in config.mots_cles + config.noms_a_reperer()]
+        # Personnes repérables comme invités : forme affichée + toutes ses formes normalisées.
+        self._personnes = [
+            (p["nom"], [normaliser(p["nom"])] + [normaliser(a) for a in p.get("alias") or []])
+            for p in config.candidats + config.personnalites
+        ]
+
+    def invites(self, texte: str) -> list[str]:
+        t = normaliser(texte)
+        return [nom for nom, formes in self._personnes if any(_contient(t, f) for f in formes)]
+
+    @staticmethod
+    def categorie(titre: str, description: str) -> str:
+        for texte in (normaliser(titre), normaliser(description)):
+            for categorie, indices in _INDICES_CATEGORIE:
+                if any(_contient(texte, i) for i in indices):
+                    return categorie
+        return "analyse"
+
+    def decider(self, chaine: Chaine, titre: str, description: str = "") -> Decision | None:
+        """Renvoie la décision si l'émission est politique, None sinon."""
+        texte = f"{titre}\n{description}"
+        titre_n = normaliser(titre)
+        motif = ""
+        if normaliser(chaine.nom) in self._chaines_blanches:
+            motif = f"chaîne « {chaine.nom} »"
+        elif any(normaliser(chaine.categorie).startswith(c) for c in self._categories_blanches if c):
+            motif = f"catégorie de chaîne « {chaine.categorie} »"
+        elif titre_n in self._emissions_blanches:
+            motif = f"émission « {titre} »"
+        if motif:
+            return Decision(LISTE_BLANCHE, self.categorie(titre, description), self.invites(texte), motif)
+
+        texte_n = normaliser(texte)
+        for mot, mot_n in self._mots:
+            if _contient(texte_n, mot_n):
+                return Decision(MOTS_CLES, self.categorie(titre, description), self.invites(texte), f"« {mot} »")
+        return None

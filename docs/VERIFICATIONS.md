@@ -56,3 +56,14 @@ logins de `chaines.yaml` via `helix/users`. C'est ce que fait déjà
 Reste à confirmer au lot 2 : que le fichier `xmltv_tnt.xml.gz` contient bien ces
 11 identifiants. Le test se lance avec `python -m grille verifier-acces` depuis
 un réseau ouvert.
+
+## Lot 2 (8 octobre 2026)
+
+Le collecteur suit le format XMLTV standard : `<programme start stop channel>`,
+dates `AAAAMMJJhhmmss ±hhmm`, balises `title`, `sub-title`, `desc`. Le site
+xmltvfr.fr restait inaccessible depuis l'environnement de développement : le
+contenu réel du fichier n'a pas pu être vérifié. `collecter-tv` signale toute
+chaîne configurée absente du guide.
+
+Les adresses de direct (`direct:` dans `chaines.yaml`) sont données de mémoire,
+à vérifier dans un navigateur.

@@ -39,29 +39,32 @@ candidats:
 personnalites:
   - {nom: "Jordan Bardella", alias: ["Bardella"]}
 
+# « ambigu: true » : nom trop courant pour servir seul de mot-clé
+# (« Renaissance » attrape les documentaires sur la Renaissance italienne).
+# Ces émissions iront au classement par modèle au lot 6.
 partis:
   - {nom: "La France insoumise", alias: ["LFI", "France insoumise"]}
   - {nom: "Parti socialiste", alias: []}
-  - {nom: "Renaissance", alias: []}
-  - {nom: "Horizons", alias: []}
+  - {nom: "Renaissance", alias: [], ambigu: true}
+  - {nom: "Horizons", alias: [], ambigu: true}
   - {nom: "Rassemblement national", alias: []}
   - {nom: "Les Républicains", alias: []}
   - {nom: "Les Écologistes", alias: []}
   - {nom: "MoDem", alias: []}
   - {nom: "UDI", alias: []}
   - {nom: "La France Humaniste", alias: []}
-  - {nom: "Place publique", alias: []}
+  - {nom: "Place publique", alias: [], ambigu: true}
   - {nom: "PCF", alias: ["Parti communiste"]}
-  - {nom: "Debout!", alias: []}
+  - {nom: "Debout!", alias: [], ambigu: true}
   - {nom: "NPA", alias: ["Nouveau Parti anticapitaliste"]}
   - {nom: "Lutte ouvrière", alias: []}
   - {nom: "Révolution Permanente", alias: []}
   - {nom: "Debout la France", alias: []}
-  - {nom: "Les Patriotes", alias: []}
+  - {nom: "Les Patriotes", alias: [], ambigu: true}
   - {nom: "UPR", alias: ["Union populaire républicaine"]}
-  - {nom: "Reconquête", alias: []}
+  - {nom: "Reconquête", alias: [], ambigu: true}
   - {nom: "UDR", alias: []}
-  - {nom: "Nouvelle Énergie", alias: []}
+  - {nom: "Nouvelle Énergie", alias: [], ambigu: true}
   - {nom: "Génération.s", alias: []}
   - {nom: "Génération Écologie", alias: []}
 
@@ -86,17 +89,16 @@ liste_blanche:
     - "Le Grand Jury"
 
 # Filtre 2 : mots-clés. Les noms de candidats, de personnalités et de partis
-# ci-dessus s'ajoutent automatiquement à cette liste.
+# ci-dessus (sauf les partis « ambigu ») s'ajoutent automatiquement à cette liste.
+# Éviter les mots trop larges : « élection » attrape l'élection de Miss France,
+# « candidat » les jeux télévisés.
 mots_cles:
   - "présidentielle"
   - "présidentielles"
   - "débat"
   - "meeting"
-  - "candidat"
-  - "candidate"
   - "premier tour"
   - "second tour"
   - "entre-deux-tours"
   - "parrainages"
-  - "élection"
   - "campagne électorale"

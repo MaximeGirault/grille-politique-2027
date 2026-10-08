@@ -36,6 +36,8 @@ class Chaine:
     adresse: str
     categorie: str
     a_confirmer: bool = False
+    # Adresse pour regarder le direct (facultative, utile surtout pour la télévision).
+    direct: str = ""
     # Identifiant extrait de l'adresse : handle ou ID YouTube, login Twitch, ID XMLTV…
     cle: dict = field(default_factory=dict, hash=False, compare=False)
 
@@ -51,9 +53,11 @@ class Configuration:
     anomalies: list[str] = field(default_factory=list)
 
     def noms_a_reperer(self) -> list[str]:
-        """Noms et alias de candidats, personnalités et partis."""
+        """Noms et alias de candidats, personnalités et partis non ambigus."""
         noms = []
         for entree in self.candidats + self.personnalites + self.partis:
+            if entree.get("ambigu"):
+                continue
             noms.append(entree["nom"])
             noms.extend(entree.get("alias") or [])
         return noms
@@ -113,9 +117,15 @@ def _lire_chaines(brut: object, anomalies: list[str]) -> list[Chaine]:
         if (plateforme, adresse.lower()) in vues:
             anomalies.append(f"{etiquette} : doublon de « {adresse} », ignoré")
             continue
+        direct = str(ligne.get("direct") or "").strip()
+        if direct and not _WEB.match(direct):
+            anomalies.append(f"{etiquette} : adresse de direct invalide « {direct} », ignorée")
+            direct = ""
         vues.add((plateforme, adresse.lower()))
         chaines.append(
-            Chaine(plateforme, nom, adresse, str(ligne["categorie"]).strip(), bool(ligne.get("a_confirmer")), cle)
+            Chaine(
+                plateforme, nom, adresse, str(ligne["categorie"]).strip(), bool(ligne.get("a_confirmer")), direct, cle
+            )
         )
     return chaines
 

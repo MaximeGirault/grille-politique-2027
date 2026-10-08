@@ -12,22 +12,24 @@
 #   twitch  : https://www.twitch.tv/identifiant
 #   tv      : identifiant XMLTV du guide xmltvfr.fr (ex. France2.fr)
 #   web     : adresse du flux RSS ou de la page de programmation
+# Champ facultatif « direct » : page pour regarder en direct.
 
 chaines:
 
 # --- Télévision (guide XMLTV de xmltvfr.fr) ---
 # LCP et Public Sénat partagent le même canal TNT, donc le même identifiant.
-- {plateforme: tv, nom: "TF1", adresse: "TF1.fr", categorie: "Généraliste"}
-- {plateforme: tv, nom: "France 2", adresse: "France2.fr", categorie: "Généraliste"}
-- {plateforme: tv, nom: "France 3", adresse: "France3.fr", categorie: "Généraliste"}
-- {plateforme: tv, nom: "France 5", adresse: "France5.fr", categorie: "Généraliste"}
-- {plateforme: tv, nom: "M6", adresse: "M6.fr", categorie: "Généraliste"}
-- {plateforme: tv, nom: "Arte", adresse: "Arte.fr", categorie: "Généraliste"}
-- {plateforme: tv, nom: "BFMTV", adresse: "BFMTV.fr", categorie: "Info en continu"}
-- {plateforme: tv, nom: "CNews", adresse: "CNews.fr", categorie: "Info en continu"}
-- {plateforme: tv, nom: "LCI", adresse: "LCI.fr", categorie: "Info en continu"}
-- {plateforme: tv, nom: "franceinfo", adresse: "FranceInfo.fr", categorie: "Info en continu"}
-- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire"}
+# « direct » : page pour regarder la chaîne en direct (adresses à vérifier dans le navigateur).
+- {plateforme: tv, nom: "TF1", adresse: "TF1.fr", categorie: "Généraliste", direct: "https://www.tf1.fr/tf1/direct"}
+- {plateforme: tv, nom: "France 2", adresse: "France2.fr", categorie: "Généraliste", direct: "https://www.france.tv/france-2/direct.html"}
+- {plateforme: tv, nom: "France 3", adresse: "France3.fr", categorie: "Généraliste", direct: "https://www.france.tv/france-3/direct.html"}
+- {plateforme: tv, nom: "France 5", adresse: "France5.fr", categorie: "Généraliste", direct: "https://www.france.tv/france-5/direct.html"}
+- {plateforme: tv, nom: "M6", adresse: "M6.fr", categorie: "Généraliste", direct: "https://www.m6.fr/m6/direct"}
+- {plateforme: tv, nom: "Arte", adresse: "Arte.fr", categorie: "Généraliste", direct: "https://www.arte.tv/fr/direct/"}
+- {plateforme: tv, nom: "BFMTV", adresse: "BFMTV.fr", categorie: "Info en continu", direct: "https://www.bfmtv.com/en-direct/"}
+- {plateforme: tv, nom: "CNews", adresse: "CNews.fr", categorie: "Info en continu", direct: "https://www.cnews.fr/le-direct"}
+- {plateforme: tv, nom: "LCI", adresse: "LCI.fr", categorie: "Info en continu", direct: "https://www.tf1.fr/lci/direct"}
+- {plateforme: tv, nom: "franceinfo", adresse: "FranceInfo.fr", categorie: "Info en continu", direct: "https://www.francetvinfo.fr/en-direct/tv.html"}
+- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire", direct: "https://lcp.fr/direct-lcp"}
 
 # Radios filmées (France Inter, franceinfo, RTL, Europe 1, RMC, Sud Radio) :
 # suivies par leurs chaînes YouTube, dans l'annexe « Grands médias » ci-dessous.
