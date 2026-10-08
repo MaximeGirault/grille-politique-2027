@@ -36,5 +36,6 @@ l'adapter, puis « Commit changes ».
 
 Tout se passe dans `config/politique.yaml`. Si une émission sans rapport apparaît,
 `collecter-tv --motifs` montre la règle responsable : retirer ou préciser le mot-clé,
-ou marquer le parti `ambigu: true`. Si une émission politique manque, ajouter son
+le déplacer dans `mots_cles_titre` (cherché dans le titre seulement), ou marquer le
+parti `ambigu: true`. Si une émission politique manque, ajouter son
 titre exact sous `liste_blanche: emissions:`.

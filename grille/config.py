@@ -50,6 +50,7 @@ class Configuration:
     partis: list[dict]
     liste_blanche: dict
     mots_cles: list[str]
+    mots_cles_titre: list[str] = field(default_factory=list)
     anomalies: list[str] = field(default_factory=list)
 
     def noms_a_reperer(self) -> list[str]:
@@ -146,8 +147,10 @@ def charger(dossier: Path = DOSSIER_CONFIG) -> Configuration:
     if not candidats:
         raise ErreurConfig("politique.yaml : la liste « candidats: » est vide")
     mots_cles = politique.get("mots_cles") or []
-    if not isinstance(mots_cles, list) or not all(isinstance(m, str) for m in mots_cles):
-        raise ErreurConfig("politique.yaml : « mots_cles: » doit être une liste de textes")
+    mots_cles_titre = politique.get("mots_cles_titre") or []
+    for rubrique, liste in (("mots_cles", mots_cles), ("mots_cles_titre", mots_cles_titre)):
+        if not isinstance(liste, list) or not all(isinstance(m, str) for m in liste):
+            raise ErreurConfig(f"politique.yaml : « {rubrique}: » doit être une liste de textes")
     liste_blanche = politique.get("liste_blanche") or {}
     if not isinstance(liste_blanche, dict):
         raise ErreurConfig("politique.yaml : « liste_blanche: » doit contenir des rubriques")
@@ -164,5 +167,6 @@ def charger(dossier: Path = DOSSIER_CONFIG) -> Configuration:
         partis=_liste_de_noms(politique, "partis", "politique.yaml"),
         liste_blanche=liste_blanche,
         mots_cles=mots_cles,
+        mots_cles_titre=mots_cles_titre,
         anomalies=anomalies,
     )

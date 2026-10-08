@@ -50,6 +50,7 @@ class FiltrePolitique:
         self._categories_blanches = [normaliser(c) for c in lb.get("categories_de_chaine") or []]
         self._emissions_blanches = {normaliser(e) for e in lb.get("emissions") or []}
         self._mots = [(m, normaliser(m)) for m in config.mots_cles + config.noms_a_reperer()]
+        self._mots_titre = [(m, normaliser(m)) for m in config.mots_cles_titre]
         # Personnes repérables comme invités : forme affichée + toutes ses formes normalisées.
         self._personnes = [
             (p["nom"], [normaliser(p["nom"])] + [normaliser(a) for a in p.get("alias") or []])
@@ -86,4 +87,9 @@ class FiltrePolitique:
         for mot, mot_n in self._mots:
             if _contient(texte_n, mot_n):
                 return Decision(MOTS_CLES, self.categorie(titre, description), self.invites(texte), f"« {mot} »")
+        for mot, mot_n in self._mots_titre:
+            if _contient(titre_n, mot_n):
+                return Decision(
+                    MOTS_CLES, self.categorie(titre, description), self.invites(texte), f"« {mot} » dans le titre"
+                )
         return None

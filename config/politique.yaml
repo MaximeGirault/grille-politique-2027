@@ -143,10 +143,15 @@ liste_blanche:
 mots_cles:
   - "présidentielle"
   - "présidentielles"
-  - "débat"
-  - "meeting"
   - "premier tour"
   - "second tour"
   - "entre-deux-tours"
   - "parrainages"
   - "campagne électorale"
+
+# Mots-clés cherchés dans le TITRE seulement : trop courants dans les descriptions
+# (« 28 minutes » est décrit comme un magazine de débat chaque soir). Une émission
+# de ce genre reste retenue si sa description cite un candidat ou « présidentielle ».
+mots_cles_titre:
+  - "débat"
+  - "meeting"

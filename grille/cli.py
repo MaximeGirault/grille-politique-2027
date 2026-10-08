@@ -30,7 +30,7 @@ def _charger_config(dossier: Path) -> config.Configuration | None:
     )
     print(
         f"  {len(conf.candidats)} candidats, {len(conf.partis)} partis, "
-        f"{len(conf.mots_cles)} mots-clés, {len(conf.liste_blanche.get('emissions') or [])} émissions en liste blanche"
+        f"{len(conf.mots_cles)} mots-clés (+ {len(conf.mots_cles_titre)} dans le titre seulement), {len(conf.liste_blanche.get('emissions') or [])} émissions en liste blanche"
     )
     for anomalie in conf.anomalies:
         print(f"  ATTENTION {anomalie}")
