@@ -1,0 +1,64 @@
+import textwrap
+
+import pytest
+
+from grille import config
+
+
+def test_configuration_du_depot_sans_anomalie():
+    conf = config.charger()
+    assert conf.anomalies == []
+    assert len(conf.chaines) == 141  # 11 tv + 25 prioritaires + 105 de l'annexe
+    assert {c.plateforme for c in conf.chaines} == {"tv", "youtube", "twitch"}
+    assert "Mélenchon" in conf.noms_a_reperer()
+
+
+@pytest.mark.parametrize(
+    "plateforme, adresse, attendu",
+    [
+        ("youtube", "https://www.youtube.com/@Clemovitch", {"handle": "Clemovitch"}),
+        ("youtube", "https://www.youtube.com/channel/UCAcAnMF0OrCtUep3Y4M-ZPw", {"channel_id": "UCAcAnMF0OrCtUep3Y4M-ZPw"}),
+        ("youtube", "https://www.youtube.com/user/hecparis", {"user": "hecparis"}),
+        ("youtube", "https://www.youtube.com/c/brutofficiel", {"custom": "brutofficiel"}),
+        ("twitch", "https://www.twitch.tv/JeanMassiet", {"login": "jeanmassiet"}),
+        ("tv", "France2.fr", {"xmltv_id": "France2.fr"}),
+        ("youtube", "https://www.twitch.tv/jeanmassiet", None),
+        ("twitch", "https://www.twitch.tv/", None),
+    ],
+)
+def test_analyser_adresse(plateforme, adresse, attendu):
+    assert config.analyser_adresse(plateforme, adresse) == attendu
+
+
+def _ecrire(dossier, chaines, politique="candidats: [{nom: A}]\n"):
+    (dossier / "chaines.yaml").write_text(textwrap.dedent(chaines), encoding="utf-8")
+    (dossier / "politique.yaml").write_text(politique, encoding="utf-8")
+
+
+def test_ligne_invalide_signalee_sans_bloquer_les_autres(tmp_path):
+    _ecrire(
+        tmp_path,
+        """\
+        chaines:
+        - {plateforme: youtube, nom: "Bonne", adresse: "https://www.youtube.com/@bonne", categorie: "X"}
+        - {plateforme: youtube, nom: "Mauvaise", adresse: "youtube.com/bonne", categorie: "X"}
+        - {plateforme: radio, nom: "Inconnue", adresse: "x", categorie: "X"}
+        - {plateforme: twitch, nom: "Sans catégorie", adresse: "https://www.twitch.tv/abc"}
+        - {plateforme: youtube, nom: "Doublon", adresse: "https://www.youtube.com/@Bonne", categorie: "X"}
+        """,
+    )
+    conf = config.charger(tmp_path)
+    assert [c.nom for c in conf.chaines] == ["Bonne"]
+    assert len(conf.anomalies) == 4
+    assert "Mauvaise" in conf.anomalies[0]
+
+
+def test_yaml_casse_est_bloquant(tmp_path):
+    _ecrire(tmp_path, "chaines:\n- {plateforme: tv, nom: \"F2\"\n")
+    with pytest.raises(config.ErreurConfig, match="YAML invalide"):
+        config.charger(tmp_path)
+
+
+def test_fichier_absent_est_bloquant(tmp_path):
+    with pytest.raises(config.ErreurConfig, match="introuvable"):
+        config.charger(tmp_path)

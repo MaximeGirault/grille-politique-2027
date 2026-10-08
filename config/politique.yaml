@@ -1,0 +1,102 @@
+# Filtre politique : candidats, partis, émissions toujours politiques et mots-clés.
+#
+# Ce fichier se modifie depuis GitHub sans toucher au code. Les filtres
+# s'appliquent dans cet ordre : liste blanche, puis mots-clés, puis modèle.
+#
+# La recherche ignore majuscules et accents : « Melenchon » trouve « Mélenchon ».
+
+# Tous les candidats déclarés ou pressentis, sans sélection, jusqu'à la liste
+# officielle du Conseil constitutionnel. Statuts repris de l'annexe du cahier des
+# charges (France-Vote, 21 septembre 2026) : à revérifier avant le lot 3.
+# « alias » : autres formes du nom à repérer dans les titres.
+candidats:
+  - {nom: "Jean-Luc Mélenchon", alias: ["Mélenchon"], parti: "La France insoumise", statut: "déclaré"}
+  - {nom: "François Ruffin", alias: ["Ruffin"], parti: "Debout!", statut: "déclaré"}
+  - {nom: "Juan Branco", alias: ["Branco"], parti: "Sans étiquette", statut: "déclaré"}
+  - {nom: "Nathalie Arthaud", alias: ["Arthaud"], parti: "Lutte ouvrière", statut: "déclaré"}
+  - {nom: "Gabriel Attal", alias: ["Attal"], parti: "Renaissance", statut: "déclaré"}
+  - {nom: "Édouard Philippe", alias: [], parti: "Horizons", statut: "déclaré"}
+  - {nom: "Bruno Retailleau", alias: ["Retailleau"], parti: "Les Républicains", statut: "désigné"}
+  - {nom: "David Lisnard", alias: ["Lisnard"], parti: "Nouvelle Énergie", statut: "déclaré"}
+  - {nom: "Marine Le Pen", alias: [], parti: "Rassemblement national", statut: "déclaré"}
+  - {nom: "Éric Zemmour", alias: ["Zemmour"], parti: "Reconquête", statut: "déclaré"}
+  - {nom: "Florian Philippot", alias: ["Philippot"], parti: "Les Patriotes", statut: "pressenti"}
+  - {nom: "François Asselineau", alias: ["Asselineau"], parti: "UPR", statut: "pressenti"}
+  - {nom: "Jean Lassalle", alias: ["Lassalle"], parti: "", statut: "pressenti"}
+  # Cités dans l'annexe sans chaîne personnelle ; statut à vérifier.
+  - {nom: "Marine Tondelier", alias: ["Tondelier"], parti: "Les Écologistes", statut: "à vérifier"}
+  - {nom: "Fabien Roussel", alias: ["Roussel"], parti: "PCF", statut: "à vérifier"}
+  - {nom: "Xavier Bertrand", alias: [], parti: "", statut: "à vérifier"}
+  - {nom: "Olivier Faure", alias: [], parti: "Parti socialiste", statut: "à vérifier"}
+  - {nom: "Jérôme Guedj", alias: ["Guedj"], parti: "", statut: "à vérifier"}
+  - {nom: "Ségolène Royal", alias: [], parti: "", statut: "à vérifier"}
+  - {nom: "Bruno Le Maire", alias: [], parti: "", statut: "à vérifier"}
+  - {nom: "Delphine Batho", alias: ["Batho"], parti: "", statut: "à vérifier"}
+  - {nom: "Anasse Kazib", alias: ["Kazib"], parti: "Révolution Permanente", statut: "à vérifier"}
+  - {nom: "Dominique de Villepin", alias: ["Villepin"], parti: "La France Humaniste", statut: "à vérifier"}
+
+# Personnalités non candidates mais à repérer comme invités.
+personnalites:
+  - {nom: "Jordan Bardella", alias: ["Bardella"]}
+
+partis:
+  - {nom: "La France insoumise", alias: ["LFI", "France insoumise"]}
+  - {nom: "Parti socialiste", alias: []}
+  - {nom: "Renaissance", alias: []}
+  - {nom: "Horizons", alias: []}
+  - {nom: "Rassemblement national", alias: []}
+  - {nom: "Les Républicains", alias: []}
+  - {nom: "Les Écologistes", alias: []}
+  - {nom: "MoDem", alias: []}
+  - {nom: "UDI", alias: []}
+  - {nom: "La France Humaniste", alias: []}
+  - {nom: "Place publique", alias: []}
+  - {nom: "PCF", alias: ["Parti communiste"]}
+  - {nom: "Debout!", alias: []}
+  - {nom: "NPA", alias: ["Nouveau Parti anticapitaliste"]}
+  - {nom: "Lutte ouvrière", alias: []}
+  - {nom: "Révolution Permanente", alias: []}
+  - {nom: "Debout la France", alias: []}
+  - {nom: "Les Patriotes", alias: []}
+  - {nom: "UPR", alias: ["Union populaire républicaine"]}
+  - {nom: "Reconquête", alias: []}
+  - {nom: "UDR", alias: []}
+  - {nom: "Nouvelle Énergie", alias: []}
+  - {nom: "Génération.s", alias: []}
+  - {nom: "Génération Écologie", alias: []}
+
+# Filtre 1 : liste blanche.
+liste_blanche:
+  # Toute émission de ces chaînes est retenue (nom exact dans chaines.yaml).
+  chaines:
+    - "LCP / Public Sénat"
+    - "LCP-Assemblée nationale"
+  # Toute émission d'une chaîne de ces catégories est retenue.
+  categories_de_chaine:
+    - "Parti"
+    - "Débats parlementaires"
+    - "Personnalité politique"
+  # Émissions toujours politiques, quelle que soit la chaîne (titre exact,
+  # sans tenir compte des majuscules et des accents). Liste de départ à compléter.
+  emissions:
+    - "Questions au gouvernement"
+    - "Questions politiques"
+    - "Dimanche en politique"
+    - "Les Quatre Vérités"
+    - "Le Grand Jury"
+
+# Filtre 2 : mots-clés. Les noms de candidats, de personnalités et de partis
+# ci-dessus s'ajoutent automatiquement à cette liste.
+mots_cles:
+  - "présidentielle"
+  - "présidentielles"
+  - "débat"
+  - "meeting"
+  - "candidat"
+  - "candidate"
+  - "premier tour"
+  - "second tour"
+  - "entre-deux-tours"
+  - "parrainages"
+  - "élection"
+  - "campagne électorale"

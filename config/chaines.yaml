@@ -1,0 +1,179 @@
+# Chaînes suivies — une ligne par chaîne.
+#
+# Champs : plateforme (tv, youtube, twitch ou web), nom, adresse, categorie.
+# Champ facultatif : a_confirmer: true pour une adresse non vérifiée (contrôlée au lot 3).
+#
+# Pour ajouter une chaîne depuis GitHub (navigateur ou téléphone) : bouton crayon,
+# copier une ligne existante, changer les valeurs, « Commit changes ».
+# Une ligne invalide n'empêche pas les autres d'être lues : elle est signalée.
+#
+# Adresses acceptées :
+#   youtube : https://www.youtube.com/@pseudo, /channel/UC…, /user/…, /c/…
+#   twitch  : https://www.twitch.tv/identifiant
+#   tv      : identifiant XMLTV du guide xmltvfr.fr (ex. France2.fr)
+#   web     : adresse du flux RSS ou de la page de programmation
+
+chaines:
+
+# --- Télévision (guide XMLTV de xmltvfr.fr) ---
+# LCP et Public Sénat partagent le même canal TNT, donc le même identifiant.
+- {plateforme: tv, nom: "TF1", adresse: "TF1.fr", categorie: "Généraliste"}
+- {plateforme: tv, nom: "France 2", adresse: "France2.fr", categorie: "Généraliste"}
+- {plateforme: tv, nom: "France 3", adresse: "France3.fr", categorie: "Généraliste"}
+- {plateforme: tv, nom: "France 5", adresse: "France5.fr", categorie: "Généraliste"}
+- {plateforme: tv, nom: "M6", adresse: "M6.fr", categorie: "Généraliste"}
+- {plateforme: tv, nom: "Arte", adresse: "Arte.fr", categorie: "Généraliste"}
+- {plateforme: tv, nom: "BFMTV", adresse: "BFMTV.fr", categorie: "Info en continu"}
+- {plateforme: tv, nom: "CNews", adresse: "CNews.fr", categorie: "Info en continu"}
+- {plateforme: tv, nom: "LCI", adresse: "LCI.fr", categorie: "Info en continu"}
+- {plateforme: tv, nom: "franceinfo", adresse: "FranceInfo.fr", categorie: "Info en continu"}
+- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire"}
+
+# Radios filmées (France Inter, franceinfo, RTL, Europe 1, RMC, Sud Radio) :
+# suivies par leurs chaînes YouTube, dans l'annexe « Grands médias » ci-dessous.
+
+# --- Chaînes prioritaires (fournies le 7 octobre 2026) ---
+- {plateforme: twitch, nom: "BackSeat (Jean Massiet)", adresse: "https://www.twitch.tv/jeanmassiet", categorie: "Décryptage"}
+- {plateforme: twitch, nom: "Mediapart", adresse: "https://www.twitch.tv/mediapart", categorie: "Média indépendant"}
+- {plateforme: twitch, nom: "LCP-Assemblée nationale", adresse: "https://www.twitch.tv/lcpassembleenationale", categorie: "Débats parlementaires"}
+- {plateforme: twitch, nom: "La France insoumise", adresse: "https://www.twitch.tv/la_france_insoumise", categorie: "Parti"}
+- {plateforme: twitch, nom: "Au Poste (David Dufresne)", adresse: "https://www.twitch.tv/auposte_fr", categorie: "Média indépendant"}
+- {plateforme: twitch, nom: "Hugo au Perchoir", adresse: "https://www.twitch.tv/hugoauperchoir", categorie: "Interviews politiques"}
+- {plateforme: youtube, nom: "Hugo au Perchoir", adresse: "https://www.youtube.com/@HugoauPerchoir", categorie: "Interviews politiques (rediffusions)"}
+- {plateforme: youtube, nom: "HugoDécrypte - Actus du jour", adresse: "https://www.youtube.com/channel/UCAcAnMF0OrCtUep3Y4M-ZPw", categorie: "Décryptage"}
+- {plateforme: youtube, nom: "Clément Viktorovitch", adresse: "https://www.youtube.com/@Clemovitch", categorie: "Décryptage"}
+- {plateforme: youtube, nom: "Gaspard G", adresse: "https://www.youtube.com/@GaspardG", categorie: "Décryptage"}
+- {plateforme: youtube, nom: "Blast", adresse: "https://www.youtube.com/@blastinfo", categorie: "Média indépendant"}
+- {plateforme: youtube, nom: "Le Média", adresse: "https://www.youtube.com/channel/UCT67YOMntJxfRnO_9bXDpvw", categorie: "Média indépendant"}
+- {plateforme: youtube, nom: "L'Humanité", adresse: "https://www.youtube.com/@lhumanitefr", categorie: "Média indépendant"}
+- {plateforme: youtube, nom: "Thinkerview", adresse: "https://www.youtube.com/@thinkerview", categorie: "Débats et interviews"}
+- {plateforme: youtube, nom: "C dans l'air", adresse: "https://www.youtube.com/@Cdanslairofficiel", categorie: "Débats et interviews"}
+- {plateforme: youtube, nom: "Sciences Po", adresse: "https://www.youtube.com/@sciencespo", categorie: "École"}
+- {plateforme: youtube, nom: "HEC Paris", adresse: "https://www.youtube.com/user/hecparis", categorie: "École"}
+- {plateforme: youtube, nom: "HEC Débats", adresse: "https://www.youtube.com/@hecdebats3040", categorie: "École"}
+- {plateforme: youtube, nom: "La France insoumise", adresse: "https://www.youtube.com/channel/UCKHKSD-yanY2ZwwU_4Tgf0w", categorie: "Parti"}
+- {plateforme: youtube, nom: "Parti socialiste", adresse: "https://www.youtube.com/channel/UCo7xGEOV-RfxOAxRfhlR3Ww", categorie: "Parti"}
+- {plateforme: youtube, nom: "Renaissance", adresse: "https://www.youtube.com/@parti-renaissance", categorie: "Parti"}
+- {plateforme: youtube, nom: "Rassemblement National", adresse: "https://www.youtube.com/@RassemblementNationalOfficiel", categorie: "Parti"}
+- {plateforme: youtube, nom: "Les Républicains", adresse: "https://www.youtube.com/channel/UC3Ma4tRFxx85oZI_XKVTPwg", categorie: "Parti"}
+- {plateforme: youtube, nom: "Raphaël Glucksmann", adresse: "https://www.youtube.com/@RaphaelGlucksmann1", categorie: "Personnalité politique"}
+- {plateforme: youtube, nom: "Les Écologistes", adresse: "https://www.youtube.com/@LesEcologistesFR", categorie: "Parti"}
+# Horizons : lien à confirmer, couvert en attendant par la chaîne d'Édouard Philippe (annexe).
+# - {plateforme: youtube, nom: "Horizons", adresse: "https://www.youtube.com/@...", categorie: "Parti"}
+
+# --- Annexe : Grands médias : télévision, radio, presse ---
+- {plateforme: youtube, nom: "France Inter", adresse: "https://www.youtube.com/@franceinter", categorie: "Radio publique, matinale et interviews"}
+- {plateforme: youtube, nom: "franceinfo", adresse: "https://www.youtube.com/@franceinfo", categorie: "Média public, info en continu"}
+- {plateforme: youtube, nom: "France Culture", adresse: "https://www.youtube.com/@franceculture", categorie: "Radio publique, débats d'idées"}
+- {plateforme: youtube, nom: "France Télévisions", adresse: "https://www.youtube.com/@FranceTelevisions", categorie: "Média public"}
+- {plateforme: youtube, nom: "C à vous", adresse: "https://www.youtube.com/@cavousofficiel", categorie: "Média public, talk-show"}
+- {plateforme: youtube, nom: "C ce soir", adresse: "https://www.youtube.com/channel/UC1UUvhau_2V8ETvHfwkUQwg", categorie: "Média public, débat"}
+- {plateforme: youtube, nom: "28 minutes - ARTE", adresse: "https://www.youtube.com/@28minutesARTE", categorie: "Média public, débat quotidien"}
+- {plateforme: youtube, nom: "ARTE Info", adresse: "https://www.youtube.com/@ArteInfoFR", categorie: "Média public, actualité européenne"}
+- {plateforme: youtube, nom: "LCP - Assemblée nationale", adresse: "https://www.youtube.com/@LCPAssembleenationale", categorie: "Chaîne parlementaire"}
+- {plateforme: youtube, nom: "Public Sénat", adresse: "https://www.youtube.com/@publicsenat", categorie: "Chaîne parlementaire"}
+- {plateforme: youtube, nom: "France 24", adresse: "https://www.youtube.com/@FRANCE24", categorie: "Média public international"}
+- {plateforme: youtube, nom: "BFMTV", adresse: "https://www.youtube.com/@BFMTV", categorie: "Info en continu, généraliste"}
+- {plateforme: youtube, nom: "LCI", adresse: "https://www.youtube.com/@LCI", categorie: "Info en continu, généraliste"}
+- {plateforme: youtube, nom: "TF1 Info", adresse: "https://www.youtube.com/@TF1INFO", categorie: "Généraliste"}
+- {plateforme: youtube, nom: "CNews", adresse: "https://www.youtube.com/@CNEWSofficiel", categorie: "Info en continu, droite"}
+- {plateforme: youtube, nom: "Europe 1", adresse: "https://www.youtube.com/@Europe1", categorie: "Radio privée, droite"}
+- {plateforme: youtube, nom: "RTL", adresse: "https://www.youtube.com/@rtl_france", categorie: "Radio privée, généraliste"}
+- {plateforme: youtube, nom: "RMC", adresse: "https://www.youtube.com/@RMC", categorie: "Radio privée, généraliste"}
+- {plateforme: youtube, nom: "Sud Radio", adresse: "https://www.youtube.com/@SudRadioOfficiel", categorie: "Radio privée, généraliste"}
+- {plateforme: youtube, nom: "Quotidien", adresse: "https://www.youtube.com/@QuotidienTMC", categorie: "Talk-show"}
+- {plateforme: youtube, nom: "Le Figaro TV", adresse: "https://www.youtube.com/@LeFigaroTV", categorie: "Presse, droite"}
+- {plateforme: youtube, nom: "Le Figaro", adresse: "https://www.youtube.com/@LeFigaro", categorie: "Presse, droite"}
+- {plateforme: youtube, nom: "Le Monde", adresse: "https://www.youtube.com/@lemondefr", categorie: "Presse, généraliste"}
+- {plateforme: youtube, nom: "Libération", adresse: "https://www.youtube.com/@liberation", categorie: "Presse, gauche"}
+- {plateforme: youtube, nom: "L'Opinion", adresse: "https://www.youtube.com/@Lopinionfr", categorie: "Presse, libéral"}
+- {plateforme: youtube, nom: "Le Point", adresse: "https://www.youtube.com/@lepoint", categorie: "Presse, centre droit, libéral"}
+- {plateforme: youtube, nom: "L'Express", adresse: "https://www.youtube.com/@LEXPRESS", categorie: "Presse, libéral"}
+- {plateforme: youtube, nom: "Marianne", adresse: "https://www.youtube.com/@Mariannetv", categorie: "Presse, souverainiste"}
+- {plateforme: youtube, nom: "Le JDD", adresse: "https://www.youtube.com/@le_jdd", categorie: "Presse, droite"}
+- {plateforme: youtube, nom: "Le Parisien", adresse: "https://www.youtube.com/@leparisien", categorie: "Presse, généraliste"}
+- {plateforme: youtube, nom: "Ouest-France", adresse: "https://www.youtube.com/@ouestfrance", categorie: "Presse régionale, généraliste"}
+- {plateforme: youtube, nom: "Konbini", adresse: "https://www.youtube.com/@konbini", categorie: "Média jeune, interviews ponctuelles"}
+- {plateforme: youtube, nom: "Brut", adresse: "https://www.youtube.com/c/brutofficiel", categorie: "Média jeune, interviews ponctuelles", a_confirmer: true}
+- {plateforme: youtube, nom: "Valeurs actuelles", adresse: "https://www.youtube.com/user/valeursactuelles", categorie: "Presse, droite", a_confirmer: true}
+
+# --- Annexe : Médias du Web, émissions et cercles de réflexion ---
+- {plateforme: youtube, nom: "Le Crayon", adresse: "https://www.youtube.com/@LeCrayonMedia", categorie: "Débats contradictoires, pluraliste"}
+- {plateforme: youtube, nom: "LEGEND", adresse: "https://www.youtube.com/@LEGENDmedia", categorie: "Longues interviews, non classé"}
+- {plateforme: youtube, nom: "Mediapart", adresse: "https://www.youtube.com/@mediapart", categorie: "Gauche (déjà suivi sur Twitch)"}
+- {plateforme: youtube, nom: "Arrêt sur images", adresse: "https://www.youtube.com/channel/UCXHWT_QoQSsdGXbqF0hAMtg", categorie: "Critique des médias, gauche"}
+- {plateforme: youtube, nom: "QG TV", adresse: "https://www.youtube.com/channel/UCCDPdHuBGfjMxlM3xZANgGQ", categorie: "Gauche"}
+- {plateforme: youtube, nom: "Élucid", adresse: "https://www.youtube.com/@Elucid", categorie: "Entretiens, souverainiste de gauche"}
+- {plateforme: youtube, nom: "Off Investigation", adresse: "https://www.youtube.com/@OffInvestigation", categorie: "Enquête, gauche"}
+- {plateforme: youtube, nom: "StreetPress", adresse: "https://www.youtube.com/@StreetPress", categorie: "Enquête, gauche"}
+- {plateforme: youtube, nom: "Le Vent Se Lève", adresse: "https://www.youtube.com/@LeVentSeLeve", categorie: "Gauche"}
+- {plateforme: youtube, nom: "Osons Causer", adresse: "https://www.youtube.com/@OsonsCauser", categorie: "Vulgarisation, gauche, peu de directs"}
+- {plateforme: youtube, nom: "Tocsin", adresse: "https://www.youtube.com/@Tocsin-media", categorie: "Matinale quotidienne, souverainiste"}
+- {plateforme: youtube, nom: "Front Populaire", adresse: "https://www.youtube.com/@FrontPopulaireOff", categorie: "Souverainiste"}
+- {plateforme: youtube, nom: "Juste Milieu", adresse: "https://www.youtube.com/@JusteMilieu", categorie: "Directs d'actualité, non classé"}
+- {plateforme: youtube, nom: "Les Incorrectibles", adresse: "https://www.youtube.com/@LesIncorrectibles", categorie: "Émission hebdomadaire, droite"}
+- {plateforme: youtube, nom: "Frontières", adresse: "https://www.youtube.com/@Frontieresmedia", categorie: "Droite identitaire"}
+- {plateforme: youtube, nom: "Omerta", adresse: "https://www.youtube.com/@omertamediaoff", categorie: "Droite souverainiste"}
+- {plateforme: youtube, nom: "Ligne Droite", adresse: "https://www.youtube.com/@LigneDroiteMatinale", categorie: "Matinale, droite"}
+- {plateforme: youtube, nom: "TVLibertés", adresse: "https://www.youtube.com/@tvlibertes", categorie: "Droite nationale"}
+- {plateforme: youtube, nom: "Contrepoints", adresse: "https://www.youtube.com/@Contrepoints", categorie: "Libéral"}
+- {plateforme: youtube, nom: "Tatiana Ventôse", adresse: "https://www.youtube.com/@TatianaventoseTV", categorie: "Créatrice, souverainiste"}
+- {plateforme: youtube, nom: "Fondapol", adresse: "https://www.youtube.com/@Fondapol", categorie: "Cercle de réflexion, libéral"}
+- {plateforme: youtube, nom: "Fondation Jean-Jaurès", adresse: "https://www.youtube.com/c/fondationjeanjaures", categorie: "Cercle de réflexion, social-démocrate"}
+- {plateforme: youtube, nom: "Institut Montaigne", adresse: "https://www.youtube.com/user/institutmontaigne", categorie: "Cercle de réflexion, libéral"}
+- {plateforme: youtube, nom: "Terra Nova", adresse: "https://www.youtube.com/channel/UC_61p_l9h4q24BTs-CCotjg", categorie: "Cercle de réflexion, centre gauche"}
+- {plateforme: youtube, nom: "Mardis du Grand Continent", adresse: "https://www.youtube.com/c/mardisgrandcontinent", categorie: "Revue, pro-européen", a_confirmer: true}
+
+# --- Annexe : Partis et mouvements ---
+- {plateforme: youtube, nom: "MoDem", adresse: "https://www.youtube.com/@MouvementDemocrate", categorie: "Parti, centre"}
+- {plateforme: youtube, nom: "UDI", adresse: "https://www.youtube.com/@UDI_off", categorie: "Parti, centre droit"}
+- {plateforme: youtube, nom: "La France Humaniste", adresse: "https://www.youtube.com/@LaFranceHumaniste", categorie: "Parti de Dominique de Villepin"}
+- {plateforme: youtube, nom: "Place publique", adresse: "https://www.youtube.com/@placepublique", categorie: "Parti, centre gauche"}
+- {plateforme: youtube, nom: "PCF", adresse: "https://www.youtube.com/user/cnpcf", categorie: "Parti, gauche communiste"}
+- {plateforme: youtube, nom: "Debout!", adresse: "https://www.youtube.com/@Debout_fr", categorie: "Mouvement de François Ruffin, gauche"}
+- {plateforme: youtube, nom: "NPA - L'Anticapitaliste", adresse: "https://www.youtube.com/@NPALAnticapitaliste", categorie: "Parti, extrême gauche"}
+- {plateforme: youtube, nom: "Lutte ouvrière", adresse: "https://www.youtube.com/@LutteOuvriere", categorie: "Parti, extrême gauche"}
+- {plateforme: youtube, nom: "Révolution Permanente", adresse: "https://www.youtube.com/channel/UCwLLr_Fo9dpdJ9UHq4A7PjA", categorie: "Organisation, extrême gauche"}
+- {plateforme: youtube, nom: "Debout la France", adresse: "https://www.youtube.com/c/DEBOUTLAFRANCE", categorie: "Parti, souverainiste"}
+- {plateforme: youtube, nom: "Les Patriotes", adresse: "https://www.youtube.com/@LesPatriotes", categorie: "Parti, souverainiste"}
+- {plateforme: youtube, nom: "UPR", adresse: "https://www.youtube.com/user/UPRdiffusion", categorie: "Parti, souverainiste"}
+
+# --- Annexe : Candidats déclarés ou pressentis ---
+- {plateforme: youtube, nom: "Jean-Luc Mélenchon", adresse: "https://www.youtube.com/@JLMelenchon", categorie: "Personnalité politique (Déclaré, LFI)"}
+- {plateforme: youtube, nom: "François Ruffin", adresse: "https://www.youtube.com/@francois_ruffin", categorie: "Personnalité politique (Déclaré, Debout!)"}
+- {plateforme: youtube, nom: "Juan Branco", adresse: "https://www.youtube.com/@JuanBrancoFR", categorie: "Personnalité politique (Déclaré, sans étiquette)"}
+- {plateforme: youtube, nom: "Nathalie Arthaud", adresse: "https://www.youtube.com/c/NathalieArthaudLutteOuvriere", categorie: "Personnalité politique (Déclarée, Lutte ouvrière)"}
+- {plateforme: youtube, nom: "Gabriel Attal", adresse: "https://www.youtube.com/@gabriel_attal", categorie: "Personnalité politique (Déclaré, Renaissance)"}
+- {plateforme: youtube, nom: "Édouard Philippe", adresse: "https://www.youtube.com/@EdouardPhilippe", categorie: "Personnalité politique (Déclaré, Horizons)"}
+- {plateforme: youtube, nom: "Bruno Retailleau", adresse: "https://www.youtube.com/@Bruno_Retailleau", categorie: "Personnalité politique (Désigné par Les Républicains)"}
+- {plateforme: youtube, nom: "David Lisnard", adresse: "https://www.youtube.com/@david_lisnard", categorie: "Personnalité politique (Déclaré, Nouvelle Énergie)"}
+- {plateforme: youtube, nom: "Marine Le Pen", adresse: "https://www.youtube.com/@MarineLePenOfficiel", categorie: "Personnalité politique (Déclarée, RN)"}
+- {plateforme: youtube, nom: "Jordan Bardella", adresse: "https://www.youtube.com/@J_Bardella", categorie: "Personnalité politique (Président du RN, non candidat)"}
+- {plateforme: youtube, nom: "Éric Zemmour", adresse: "https://www.youtube.com/@EricZemmourOff", categorie: "Personnalité politique (Déclaré, Reconquête)"}
+- {plateforme: youtube, nom: "Florian Philippot", adresse: "https://www.youtube.com/@FLORIANPHILIPPOT1", categorie: "Personnalité politique (Pressenti, Les Patriotes)"}
+- {plateforme: youtube, nom: "François Asselineau", adresse: "https://www.youtube.com/@f_asselineau", categorie: "Personnalité politique (Pressenti, UPR)"}
+- {plateforme: youtube, nom: "Jean Lassalle", adresse: "https://www.youtube.com/@JeanLassalleOfficiel", categorie: "Personnalité politique (Pressenti)"}
+
+# --- Annexe : Institutions ---
+- {plateforme: youtube, nom: "Assemblée nationale", adresse: "https://www.youtube.com/@Assemblee-nationale", categorie: "Séances et commissions en direct"}
+- {plateforme: youtube, nom: "Sénat", adresse: "https://www.youtube.com/@senat", categorie: "Séances et auditions en direct"}
+- {plateforme: youtube, nom: "Élysée", adresse: "https://www.youtube.com/@elysee", categorie: "Discours et déclarations"}
+- {plateforme: youtube, nom: "Gouvernement", adresse: "https://www.youtube.com/@gouvernementFR", categorie: "Comptes rendus du Conseil des ministres"}
+- {plateforme: youtube, nom: "Conseil constitutionnel", adresse: "https://www.youtube.com/@Conseilconstitutionnel", categorie: "Parrainages, audiences"}
+- {plateforme: youtube, nom: "Vie-publique", adresse: "https://www.youtube.com/@viepublique", categorie: "Pédagogie"}
+
+# --- Annexe : Twitch ---
+- {plateforme: twitch, nom: "Samuel Étienne", adresse: "https://www.twitch.tv/samueletienne", categorie: "Revue de presse quotidienne, généraliste"}
+- {plateforme: twitch, nom: "Clemovitch (Clément Viktorovitch)", adresse: "https://www.twitch.tv/clemovitch", categorie: "Analyse du discours politique"}
+- {plateforme: twitch, nom: "HugoDécrypte", adresse: "https://www.twitch.tv/hugodecrypte", categorie: "Talk-show d'actualité, généraliste"}
+- {plateforme: twitch, nom: "Ostpolitik", adresse: "https://www.twitch.tv/ostpolitik", categorie: "Matinale d'actualité, non classé"}
+- {plateforme: twitch, nom: "franceinfo", adresse: "https://www.twitch.tv/franceinfo", categorie: "Média public"}
+- {plateforme: twitch, nom: "BFMTV", adresse: "https://www.twitch.tv/bfmtv", categorie: "Généraliste"}
+- {plateforme: twitch, nom: "Sardoche", adresse: "https://www.twitch.tv/sardoche", categorie: "Streamer, jeux vidéo et politique, droite libérale"}
+- {plateforme: twitch, nom: "Paroles d'Honneur", adresse: "https://www.twitch.tv/parolesdhonneur", categorie: "Gauche décoloniale", a_confirmer: true}
+- {plateforme: twitch, nom: "Usul", adresse: "https://www.twitch.tv/usul2000", categorie: "Gauche", a_confirmer: true}
+- {plateforme: twitch, nom: "Dany et Raz", adresse: "https://www.twitch.tv/danyetraz", categorie: "Gauche", a_confirmer: true}
+- {plateforme: twitch, nom: "Le Média", adresse: "https://www.twitch.tv/lemediatv", categorie: "Gauche", a_confirmer: true}
+- {plateforme: twitch, nom: "Public Sénat", adresse: "https://www.twitch.tv/publicsenat", categorie: "Chaîne parlementaire", a_confirmer: true}
+- {plateforme: twitch, nom: "Le Monde", adresse: "https://www.twitch.tv/lemondefr", categorie: "Presse, généraliste", a_confirmer: true}
+- {plateforme: twitch, nom: "ARTE", adresse: "https://www.twitch.tv/arte", categorie: "Média public", a_confirmer: true}
