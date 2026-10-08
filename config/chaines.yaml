@@ -97,7 +97,7 @@ chaines:
 - {plateforme: youtube, nom: "Ouest-France", adresse: "https://www.youtube.com/@ouestfrance", categorie: "Presse régionale, généraliste"}
 - {plateforme: youtube, nom: "Konbini", adresse: "https://www.youtube.com/@konbini", categorie: "Média jeune, interviews ponctuelles"}
 - {plateforme: youtube, nom: "Brut", adresse: "https://www.youtube.com/c/brutofficiel", categorie: "Média jeune, interviews ponctuelles", a_confirmer: true}
-- {plateforme: youtube, nom: "Valeurs actuelles", adresse: "https://www.youtube.com/user/valeursactuelles", categorie: "Presse, droite", a_confirmer: true}
+- {plateforme: youtube, nom: "Valeurs actuelles", adresse: "https://www.youtube.com/user/valeursactuelles", categorie: "Presse, droite"}
 
 # --- Annexe : Médias du Web, émissions et cercles de réflexion ---
 - {plateforme: youtube, nom: "Le Crayon", adresse: "https://www.youtube.com/@LeCrayonMedia", categorie: "Débats contradictoires, pluraliste"}
@@ -124,7 +124,7 @@ chaines:
 - {plateforme: youtube, nom: "Fondation Jean-Jaurès", adresse: "https://www.youtube.com/c/fondationjeanjaures", categorie: "Cercle de réflexion, social-démocrate"}
 - {plateforme: youtube, nom: "Institut Montaigne", adresse: "https://www.youtube.com/user/institutmontaigne", categorie: "Cercle de réflexion, libéral"}
 - {plateforme: youtube, nom: "Terra Nova", adresse: "https://www.youtube.com/channel/UC_61p_l9h4q24BTs-CCotjg", categorie: "Cercle de réflexion, centre gauche"}
-- {plateforme: youtube, nom: "Mardis du Grand Continent", adresse: "https://www.youtube.com/c/mardisgrandcontinent", categorie: "Revue, pro-européen", a_confirmer: true}
+- {plateforme: youtube, nom: "Mardis du Grand Continent", adresse: "https://www.youtube.com/c/mardisgrandcontinent", categorie: "Revue, pro-européen"}
 
 # --- Annexe : Partis et mouvements ---
 - {plateforme: youtube, nom: "MoDem", adresse: "https://www.youtube.com/@MouvementDemocrate", categorie: "Parti, centre"}
@@ -172,12 +172,12 @@ chaines:
 - {plateforme: twitch, nom: "franceinfo", adresse: "https://www.twitch.tv/franceinfo", categorie: "Média public"}
 - {plateforme: twitch, nom: "BFMTV", adresse: "https://www.twitch.tv/bfmtv", categorie: "Généraliste"}
 - {plateforme: twitch, nom: "Sardoche", adresse: "https://www.twitch.tv/sardoche", categorie: "Streamer, jeux vidéo et politique, droite libérale"}
-- {plateforme: twitch, nom: "Paroles d'Honneur", adresse: "https://www.twitch.tv/parolesdhonneur", categorie: "Gauche décoloniale", a_confirmer: true}
-- {plateforme: twitch, nom: "Usul", adresse: "https://www.twitch.tv/usul2000", categorie: "Gauche", a_confirmer: true}
+- {plateforme: twitch, nom: "Paroles d'Honneur", adresse: "https://www.twitch.tv/parolesdhonneur", categorie: "Gauche décoloniale"}
+- {plateforme: twitch, nom: "Usul", adresse: "https://www.twitch.tv/usul2000", categorie: "Gauche"}
 # Compte introuvable sur Twitch (vérifié le 8 octobre 2026) : retirer le « # » si l'adresse est corrigée.
 # - {plateforme: twitch, nom: "Dany et Raz", adresse: "https://www.twitch.tv/danyetraz", categorie: "Gauche", a_confirmer: true}
-- {plateforme: twitch, nom: "Le Média", adresse: "https://www.twitch.tv/lemediatv", categorie: "Gauche", a_confirmer: true}
-- {plateforme: twitch, nom: "Public Sénat", adresse: "https://www.twitch.tv/publicsenat", categorie: "Chaîne parlementaire", a_confirmer: true}
+- {plateforme: twitch, nom: "Le Média", adresse: "https://www.twitch.tv/lemediatv", categorie: "Gauche"}
+- {plateforme: twitch, nom: "Public Sénat", adresse: "https://www.twitch.tv/publicsenat", categorie: "Chaîne parlementaire"}
 # Compte introuvable sur Twitch (vérifié le 8 octobre 2026) : retirer le « # » si l'adresse est corrigée.
 # - {plateforme: twitch, nom: "Le Monde", adresse: "https://www.twitch.tv/lemondefr", categorie: "Presse, généraliste", a_confirmer: true}
-- {plateforme: twitch, nom: "ARTE", adresse: "https://www.twitch.tv/arte", categorie: "Média public", a_confirmer: true}
+- {plateforme: twitch, nom: "ARTE", adresse: "https://www.twitch.tv/arte", categorie: "Média public"}
