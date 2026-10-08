@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 CHEMIN_BASE = Path(__file__).resolve().parent.parent / "data" / "grille.sqlite"
-VERSION_SCHEMA = 1
+VERSION_SCHEMA = 2
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS emissions (
@@ -34,6 +34,15 @@ CREATE TABLE IF NOT EXISTS emissions (
     vu_le       TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS emissions_debut ON emissions (debut);
+
+-- Version 2 (lot 3) : identifiants YouTube déjà résolus, pour ne pas dépenser de
+-- quota à chaque collecte. Une ligne par adresse de chaines.yaml.
+CREATE TABLE IF NOT EXISTS chaines_resolues (
+    adresse     TEXT PRIMARY KEY,
+    identifiant TEXT NOT NULL,                    -- UC… pour YouTube
+    playlist    TEXT NOT NULL,                    -- playlist des vidéos mises en ligne (UU…)
+    resolu_le   TEXT NOT NULL
+);
 """
 
 
@@ -85,6 +94,7 @@ def enregistrer_collecte(
     ]
     connexion.executemany("UPDATE emissions SET statut = 'annulé', vu_le = ? WHERE id = ?", [(vu_le, i) for i in annulees])
     connexion.commit()
+    actualiser_statuts(connexion, maintenant)
     return len(annulees)
 
 
@@ -101,3 +111,32 @@ def lister(connexion: sqlite3.Connection, depuis: datetime, jusqua: datetime) ->
             e["invites"], e["lien"] = json.loads(e["invites"]), json.loads(e["lien"])
             resultat.append(e)
     return sorted(resultat, key=lambda e: (datetime.fromisoformat(e["debut"]), e["chaine"]))
+
+
+def actualiser_statuts(connexion: sqlite3.Connection, maintenant: datetime) -> None:
+    """Passe en « terminé » les émissions annoncées ou en direct dont l'heure de fin est passée."""
+    terminees = [
+        i
+        for i, fin in connexion.execute(
+            "SELECT id, fin FROM emissions WHERE statut IN ('annoncé', 'en direct') AND fin IS NOT NULL"
+        )
+        if datetime.fromisoformat(fin) <= maintenant
+    ]
+    connexion.executemany("UPDATE emissions SET statut = 'terminé' WHERE id = ?", [(i,) for i in terminees])
+    connexion.commit()
+
+
+def terminer_directs(connexion: sqlite3.Connection, plateforme: str, ids_en_direct: set[str],
+                     chaines_couvertes: set[str], maintenant: datetime) -> int:
+    """Directs sans heure de fin qui ne sont plus diffusés : « terminé », fin = maintenant."""
+    finis = [
+        i
+        for i, chaine in connexion.execute(
+            "SELECT id, chaine FROM emissions WHERE plateforme = ? AND statut = 'en direct'", (plateforme,)
+        )
+        if i not in ids_en_direct and chaine in chaines_couvertes
+    ]
+    fin = maintenant.isoformat(timespec="seconds")
+    connexion.executemany("UPDATE emissions SET statut = 'terminé', fin = ? WHERE id = ?", [(fin, i) for i in finis])
+    connexion.commit()
+    return len(finis)

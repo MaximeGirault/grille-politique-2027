@@ -11,4 +11,5 @@ en retirant clés et jetons.
   les balises `<channel>` et une dizaine de `<programme>` des chaînes configurées,
   puis adapter les identifiants et dates attendus dans `tests/test_tv.py`.
   Prévu au lot 5, depuis les serveurs GitHub qui, eux, ont accès au site.
-- `youtube_channels.json`, `twitch_*.json` : vérification des accès (lot 1).
+- `youtube_channels.json`, `twitch_token.json`, `twitch_users.json` : vérification des accès (lot 1).
+- `youtube_api.json`, `twitch_api.json` : collecteurs YouTube et Twitch (lot 3).

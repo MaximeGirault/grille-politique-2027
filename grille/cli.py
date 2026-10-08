@@ -1,15 +1,16 @@
-"""Commandes : python -m grille init | verifier-acces | collecter-tv | lister."""
+"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-youtube|-twitch] | lister."""
 
 from __future__ import annotations
 
 import argparse
+import os
 from collections import Counter
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import requests
 
-from grille import acces, config, db, tv
+from grille import acces, config, db, tv, twitch, youtube
 
 JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
@@ -65,7 +66,9 @@ def afficher_grille(emissions: list[dict]) -> None:
             print(f"\n{JOURS[debut.weekday()].capitalize()} {debut.day} {MOIS[debut.month - 1]}")
         invites = f" — avec {', '.join(e['invites'])}" if e["invites"] else ""
         etat = f" [{e['statut']}]" if e["statut"] != "annoncé" else ""
-        print(f"  {debut:%H:%M}  {e['chaine']:<20} {e['categorie']:<9} {e['titre']}{invites}{etat}  ({e['filtre']})")
+        plateforme = {"tv": "TV", "youtube": "YouTube", "twitch": "Twitch", "web": "Web"}[e["plateforme"]]
+        print(f"  {debut:%H:%M}  {plateforme:<7} {e['chaine'][:24]:<24} {e['categorie']:<9} "
+              f"{e['titre']}{invites}{etat}  ({e['filtre']})")
 
 
 def _horizon() -> tuple[datetime, datetime]:
@@ -74,43 +77,130 @@ def _horizon() -> tuple[datetime, datetime]:
     return maintenant, fin
 
 
-def cmd_collecter_tv(args: argparse.Namespace) -> int:
-    conf = _charger_config(args.config)
-    if conf is None:
-        return 1
-    if args.fichier:
-        chemin = args.fichier
-        print(f"Guide lu depuis {chemin}")
+def _resume(retenues: list[dict]) -> str:
+    par_filtre = Counter(e["filtre"] for e in retenues)
+    return f"{len(retenues)} retenues ({', '.join(f'{n} {f}' for f, n in sorted(par_filtre.items())) or 'aucune'})"
+
+
+def _motifs(retenues: list[dict]) -> None:
+    for e in retenues:
+        print(f"  {e['debut'][:16]}  {e['chaine'][:20]:<20} {e['titre'][:60]:<60} ← {e['filtre']} : {e['motif']}")
+
+
+def _a_confirmer(resultats: dict[str, bool]) -> None:
+    for nom, trouvee in sorted(resultats.items()):
+        verdict = "trouvée, on peut retirer « a_confirmer »" if trouvee else "INTROUVABLE, adresse à corriger"
+        print(f"  Chaîne à confirmer — {nom} : {verdict}")
+
+
+def _etape_tv(conf, connexion, maintenant, args) -> bool:
+    fichier = getattr(args, "fichier", None)
+    if fichier:
+        chemin = fichier
+        print(f"Télévision : guide lu depuis {chemin}")
     else:
-        print(f"Téléchargement du guide : {acces.XMLTV_TNT}")
+        print(f"Télévision : téléchargement du guide {acces.XMLTV_TNT}")
         try:
             chemin = tv.telecharger(requests.Session())
         except requests.RequestException as e:
-            print(f"ERREUR : guide télévision inaccessible ({e})")
-            return 1
-    connexion = db.ouvrir(args.base)
-    maintenant, fin = _horizon()
+            print(f"  ERREUR guide télévision inaccessible ({e})")
+            return False
     try:
         rapport = tv.collecter(conf, chemin, connexion, maintenant)
     finally:
-        if not args.fichier:
+        if not fichier:
             chemin.unlink(missing_ok=True)
-    par_filtre = Counter(e["filtre"] for e in rapport.retenues)
     print(
-        f"{rapport.lus} programmes lus sur les chaînes configurées, {rapport.dans_l_horizon} à venir ; "
-        f"{len(rapport.retenues)} retenus ({', '.join(f'{n} {f}' for f, n in sorted(par_filtre.items())) or 'aucun'}), "
-        f"{rapport.annulees} passés en « annulé »"
+        f"  {rapport.lus} programmes lus sur les chaînes configurées, {rapport.dans_l_horizon} à venir ; "
+        f"{_resume(rapport.retenues)}, {rapport.annulees} passées en « annulé »"
     )
     for nom in rapport.chaines_absentes:
         print(f"  ATTENTION chaîne absente du guide : {nom}")
     if args.motifs:
-        for e in rapport.retenues:
-            print(f"  {e['debut'][:16]}  {e['chaine']:<20} {e['titre'][:60]:<60} ← {e['filtre']} : {e['motif']}")
-    emissions = [e for e in db.lister(connexion, maintenant, fin) if e["plateforme"] == "tv"]
+        _motifs(rapport.retenues)
+    return True
+
+
+def _etape_youtube(conf, connexion, maintenant, args) -> bool:
+    print("YouTube :")
+    rapport = youtube.collecter(conf, requests.Session(), connexion, maintenant)
+    if rapport.interrompu and not rapport.unites:
+        print(f"  ERREUR {rapport.interrompu}")
+        return False
+    print(
+        f"  {rapport.chaines_lues} chaînes lues, {rapport.videos_examinees} vidéos examinées ; "
+        f"{_resume(rapport.retenues)}, {rapport.annulees} passées en « annulé » ; quota consommé : {rapport.unites} unités"
+    )
+    if rapport.interrompu:
+        print(f"  ERREUR collecte interrompue : {rapport.interrompu}")
+    for anomalie in rapport.anomalies:
+        print(f"  ATTENTION {anomalie}")
+    _a_confirmer(rapport.a_confirmer)
+    if args.motifs:
+        _motifs(rapport.retenues)
+    return not rapport.interrompu
+
+
+def _etape_twitch(conf, connexion, maintenant, args) -> bool:
+    print("Twitch :")
+    rapport = twitch.collecter(conf, requests.Session(), connexion, maintenant)
+    if rapport.interrompu and not rapport.chaines_lues:
+        print(f"  ERREUR {rapport.interrompu}")
+        return False
+    print(
+        f"  {rapport.chaines_lues} chaînes lues, {rapport.en_direct} en direct, {rapport.creneaux} créneaux à venir ; "
+        f"{_resume(rapport.retenues)}, {rapport.annulees} passées en « annulé », {rapport.directs_finis} directs terminés"
+    )
+    if rapport.interrompu:
+        print(f"  ERREUR collecte interrompue : {rapport.interrompu}")
+    for anomalie in rapport.anomalies:
+        print(f"  ATTENTION {anomalie}")
+    _a_confirmer(rapport.a_confirmer)
+    if args.motifs:
+        _motifs(rapport.retenues)
+    return not rapport.interrompu
+
+
+ETAPES = {"tv": _etape_tv, "youtube": _etape_youtube, "twitch": _etape_twitch}
+NOMS = {"tv": "à la télévision", "youtube": "sur YouTube", "twitch": "sur Twitch"}
+
+
+def _collecter(args: argparse.Namespace, plateformes: list[str]) -> int:
+    """Chaque source est indépendante : si l'une tombe, les autres continuent."""
+    conf = _charger_config(args.config)
+    if conf is None:
+        return 1
+    connexion = db.ouvrir(args.base)
+    maintenant, fin = _horizon()
+    reussites = []
+    for p in plateformes:
+        try:
+            reussites.append(ETAPES[p](conf, connexion, maintenant, args))
+        except Exception as e:  # une source cassée ne doit pas arrêter les autres
+            print(f"  ERREUR inattendue ({type(e).__name__} : {e})")
+            reussites.append(False)
+    emissions = [e for e in db.lister(connexion, maintenant, fin) if e["plateforme"] in plateformes]
     connexion.close()
-    print(f"\nÉmissions politiques à la télévision, aujourd'hui et les 7 jours suivants : {len(emissions)}")
+    ou = NOMS[plateformes[0]] if len(plateformes) == 1 else "toutes sources"
+    print(f"\nÉmissions politiques {ou}, aujourd'hui et les 7 jours suivants : {len(emissions)}")
     afficher_grille(emissions)
-    return 0
+    return 0 if all(reussites) else 1
+
+
+def cmd_collecter_tv(args: argparse.Namespace) -> int:
+    return _collecter(args, ["tv"])
+
+
+def cmd_collecter_youtube(args: argparse.Namespace) -> int:
+    return _collecter(args, ["youtube"])
+
+
+def cmd_collecter_twitch(args: argparse.Namespace) -> int:
+    return _collecter(args, ["twitch"])
+
+
+def cmd_collecter(args: argparse.Namespace) -> int:
+    return _collecter(args, ["tv", "youtube", "twitch"])
 
 
 def cmd_lister(args: argparse.Namespace) -> int:
@@ -123,7 +213,19 @@ def cmd_lister(args: argparse.Namespace) -> int:
     return 0
 
 
+def charger_env(chemin: Path = Path(__file__).resolve().parent.parent / ".env") -> None:
+    """Lit les secrets d'un fichier .env local (ignoré par Git), sans écraser l'environnement."""
+    if not chemin.exists():
+        return
+    for ligne in chemin.read_text(encoding="utf-8").splitlines():
+        ligne = ligne.strip()
+        if ligne and not ligne.startswith("#") and "=" in ligne:
+            cle, valeur = ligne.split("=", 1)
+            os.environ.setdefault(cle.strip(), valeur.strip().strip('"').strip("'"))
+
+
 def main(argv: list[str] | None = None) -> int:
+    charger_env()
     parser = argparse.ArgumentParser(prog="python -m grille", description="Grille politique Présidentielle 2027")
     parser.add_argument("--config", type=Path, default=config.DOSSIER_CONFIG, help="dossier des fichiers YAML")
     parser.add_argument("--base", type=Path, default=db.CHEMIN_BASE, help="fichier SQLite")
@@ -136,6 +238,14 @@ def main(argv: list[str] | None = None) -> int:
     collecte.add_argument("--fichier", type=Path, help="guide déjà téléchargé (.xml ou .xml.gz) au lieu de xmltvfr.fr")
     collecte.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")
     collecte.set_defaults(func=cmd_collecter_tv)
+    for nom, func, aide in [
+        ("collecter-youtube", cmd_collecter_youtube, "directs YouTube programmés et en cours des chaînes suivies"),
+        ("collecter-twitch", cmd_collecter_twitch, "chaînes Twitch en direct et plannings publiés"),
+        ("collecter", cmd_collecter, "télévision, YouTube et Twitch à la suite, chacun indépendamment"),
+    ]:
+        sp = sous.add_parser(nom, help=aide)
+        sp.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")
+        sp.set_defaults(func=func)
     sous.add_parser("lister", help="affiche la grille enregistrée en base").set_defaults(func=cmd_lister)
     args = parser.parse_args(argv)
     return args.func(args)

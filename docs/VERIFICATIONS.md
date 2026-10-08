@@ -67,3 +67,24 @@ chaîne configurée absente du guide.
 
 Les adresses de direct (`direct:` dans `chaines.yaml`) sont données de mémoire,
 à vérifier dans un navigateur.
+
+## Lot 3 (8 octobre 2026)
+
+YouTube, confirmé dans le document de découverte officiel : `playlistItems.list`
+renvoie 50 éléments au plus (`maxResults`), `videos.list` et `channels.list`
+acceptent plusieurs `id` séparés par des virgules (1 unité par appel),
+`liveStreamingDetails` contient `scheduledStartTime`, `actualStartTime`,
+`actualEndTime` et `scheduledEndTime`. Il n'existe pas de recherche par adresse
+`/c/…` : le collecteur l'essaie comme pseudo `@…` et signale l'échec.
+
+Estimation : 110 chaînes → 110 + 33 = 143 unités par collecte, environ
+**3 400 unités par jour**, sous la limite de 10 000.
+
+Restent à vérifier avec de vraies clés (accès réseau bloqué pendant le lot 3) :
+
+- qu'un direct programmé figure dans la playlist des vidéos mises en ligne
+  avant son début (comportement constaté couramment, non documenté) ;
+- que `helix/schedule` répond 404 pour une chaîne sans planning (traité comme
+  un planning vide) ;
+- les réponses enregistrées de `tests/reponses/youtube_api.json` et
+  `twitch_api.json`, reconstituées d'après la documentation.

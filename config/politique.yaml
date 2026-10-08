@@ -127,6 +127,7 @@ liste_blanche:
     - "Parti"
     - "Débats parlementaires"
     - "Personnalité politique"
+    - "Interviews politiques"
   # Émissions toujours politiques, quelle que soit la chaîne (titre exact,
   # sans tenir compte des majuscules et des accents). Liste de départ à compléter.
   emissions:

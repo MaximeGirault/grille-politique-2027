@@ -35,12 +35,14 @@ def _erreur_http(reponse: requests.Response) -> str:
 
 
 def estimer_quota_youtube(nb_chaines: int, collectes_par_jour: int = 24) -> int:
-    """Unités par jour : 1 playlistItems.list + 1 videos.list par chaîne et par collecte.
+    """Unités par jour : 1 playlistItems.list par chaîne, plus 1 videos.list par lot de 50 vidéos.
 
-    channels.list (1 unité par chaîne) ne sert qu'une fois, pour trouver la
-    playlist des vidéos mises en ligne ; search.list (100 unités) n'est pas utilisé.
+    Le collecteur examine les 15 dernières vidéos de chaque chaîne. channels.list
+    ne sert qu'une fois par chaîne (résultat mémorisé en base) ; search.list
+    (100 unités) n'est jamais utilisé.
     """
-    return nb_chaines * 2 * collectes_par_jour
+    lots_de_videos = -(-nb_chaines * 15 // 50)
+    return (nb_chaines + lots_de_videos) * collectes_par_jour
 
 
 def verifier_youtube(config: Configuration, session: requests.Session) -> Resultat:
