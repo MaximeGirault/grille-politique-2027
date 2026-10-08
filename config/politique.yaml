@@ -38,6 +38,7 @@ candidats:
 # Personnalités non candidates mais à repérer comme invités.
 personnalites:
   - {nom: "Jordan Bardella", alias: ["Bardella"]}
+  - {nom: "Manuel Bompard", alias: ["Bompard"]}
 
 # « ambigu: true » : nom trop courant pour servir seul de mot-clé
 # (« Renaissance » attrape les documentaires sur la Renaissance italienne).
