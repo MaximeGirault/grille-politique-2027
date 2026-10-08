@@ -23,13 +23,18 @@ candidats:
   - {nom: "Florian Philippot", alias: ["Philippot"], parti: "Les Patriotes", statut: "pressenti"}
   - {nom: "François Asselineau", alias: ["Asselineau"], parti: "UPR", statut: "pressenti"}
   - {nom: "Jean Lassalle", alias: ["Lassalle"], parti: "", statut: "pressenti"}
-  # Cités dans l'annexe sans chaîne personnelle ; statut à vérifier.
-  - {nom: "Marine Tondelier", alias: ["Tondelier"], parti: "Les Écologistes", statut: "à vérifier"}
-  - {nom: "Fabien Roussel", alias: ["Roussel"], parti: "PCF", statut: "à vérifier"}
+  # Primaire de la gauche (PS, Place publique, GRS) : 9 et 10 octobre 2026, second tour
+  # éventuel les 16 et 17 octobre. Mettre à jour les statuts après le résultat.
+  # Autres noms cités dans l'annexe ; statut à vérifier quand il est indiqué.
+  - {nom: "Marine Tondelier", alias: ["Tondelier"], parti: "Les Écologistes", statut: "déclarée, hors primaire PS"}
+  - {nom: "Fabien Roussel", alias: ["Roussel"], parti: "PCF", statut: "déclaré (validé par le PCF le 6 septembre)"}
   - {nom: "Xavier Bertrand", alias: [], parti: "", statut: "à vérifier"}
-  - {nom: "Olivier Faure", alias: [], parti: "Parti socialiste", statut: "à vérifier"}
-  - {nom: "Jérôme Guedj", alias: ["Guedj"], parti: "", statut: "à vérifier"}
-  - {nom: "Ségolène Royal", alias: [], parti: "", statut: "à vérifier"}
+  - {nom: "Olivier Faure", alias: [], parti: "Parti socialiste", statut: "primaire de la gauche"}
+  - {nom: "Jérôme Guedj", alias: ["Guedj"], parti: "", statut: "primaire de la gauche"}
+  - {nom: "Ségolène Royal", alias: [], parti: "", statut: "primaire de la gauche"}
+  - {nom: "Raphaël Glucksmann", alias: ["Glucksmann"], parti: "Place publique", statut: "primaire de la gauche"}
+  - {nom: "Emmanuel Maurel", alias: ["Maurel"], parti: "Gauche républicaine et socialiste", statut: "primaire de la gauche"}
+  - {nom: "Clémentine Autain", alias: ["Autain"], parti: "", statut: "primaire unitaire de gauche, à vérifier"}
   - {nom: "Bruno Le Maire", alias: [], parti: "", statut: "à vérifier"}
   - {nom: "Delphine Batho", alias: ["Batho"], parti: "", statut: "à vérifier"}
   - {nom: "Anasse Kazib", alias: ["Kazib"], parti: "Révolution Permanente", statut: "à vérifier"}
@@ -39,6 +44,47 @@ candidats:
 personnalites:
   - {nom: "Jordan Bardella", alias: ["Bardella"]}
   - {nom: "Manuel Bompard", alias: ["Bompard"]}
+  # « Maréchal » seul attraperait les documentaires d'histoire : nom complet seulement.
+  - {nom: "Marion Maréchal", alias: ["Marion Maréchal-Le Pen"]}
+
+  # Entourage des candidats, régulièrement invité sur les plateaux.
+  # Pas d'alias pour les noms de famille courants (Haddad, Dumont, Sanchez…).
+  # Marine Le Pen : équipe de campagne annoncée en juillet et septembre 2026.
+  - {nom: "Julien Sanchez", alias: []}
+  - {nom: "Sébastien Chenu", alias: ["Chenu"]}
+  - {nom: "Laure Lavalette", alias: []}
+  - {nom: "Laurent Jacobelli", alias: ["Jacobelli"]}
+  - {nom: "Gaëtan Dussausaye", alias: ["Dussausaye"]}
+  - {nom: "Aleksandar Nikolic", alias: []}
+  - {nom: "Andrea Kotarac", alias: ["Kotarac"]}
+  - {nom: "Jean-Philippe Tanguy", alias: []}
+  # Bruno Retailleau : porte-parole annoncés le 8 septembre 2026.
+  - {nom: "Othman Nasrou", alias: ["Nasrou"]}
+  - {nom: "Agnès Evren", alias: ["Evren"]}
+  - {nom: "Jonas Haddad", alias: []}
+  - {nom: "Pierre-Henri Dumont", alias: []}
+  - {nom: "Kristell Niasme", alias: ["Niasme"]}
+  # Gabriel Attal : équipe de campagne annoncée en septembre 2026.
+  - {nom: "Franck Riester", alias: ["Riester"]}
+  - {nom: "Céline Géraud", alias: []}
+  - {nom: "Violette Spillebout", alias: ["Spillebout"]}
+  - {nom: "Jean-Charles Orsucci", alias: ["Orsucci"]}
+  - {nom: "Rachel-Flore Pardo", alias: []}
+  - {nom: "Jad Zahab", alias: ["Zahab"]}
+  - {nom: "Abdoulaye Kanté", alias: []}
+  # Jean-Luc Mélenchon : proches de longue date, rôle dans la campagne à confirmer.
+  - {nom: "Mathilde Panot", alias: ["Panot"]}
+  - {nom: "Éric Coquerel", alias: ["Coquerel"]}
+  - {nom: "Clémence Guetté", alias: ["Guetté"]}
+  - {nom: "Manon Aubry", alias: []}
+  # Édouard Philippe : proches de longue date, rôle dans la campagne à confirmer.
+  - {nom: "Christophe Béchu", alias: ["Béchu"]}
+  - {nom: "Gilles Boyer", alias: []}
+  # Éric Zemmour : proches de longue date, rôle dans la campagne à confirmer.
+  - {nom: "Sarah Knafo", alias: ["Knafo"]}
+  - {nom: "Stanislas Rigault", alias: []}
+  # Nathalie Arthaud : à confirmer.
+  - {nom: "Jean-Pierre Mercier", alias: []}
 
 # « ambigu: true » : nom trop courant pour servir seul de mot-clé
 # (« Renaissance » attrape les documentaires sur la Renaissance italienne).
