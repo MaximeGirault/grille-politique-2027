@@ -1,0 +1,126 @@
+"""Collecteur YouTube, à partir de réponses enregistrées de l'API."""
+
+import shutil
+from datetime import datetime
+from pathlib import Path
+
+import pytest
+
+from grille import config, db, youtube
+from grille.acces import YOUTUBE_API
+from grille.tv import PARIS
+from tests.session_factice import Reponse, Session, charger
+
+MAINTENANT = datetime(2027, 3, 27, 10, 0, tzinfo=PARIS)  # veille du passage à l'heure d'été
+API = charger("youtube_api.json")
+CHAINES = """\
+chaines:
+- {plateforme: youtube, nom: "Hugo au Perchoir", adresse: "https://www.youtube.com/@HugoauPerchoir", categorie: "Interviews politiques (rediffusions)"}
+- {plateforme: youtube, nom: "Clément Viktorovitch", adresse: "https://www.youtube.com/@Clemovitch", categorie: "Décryptage"}
+- {plateforme: youtube, nom: "La France insoumise", adresse: "https://www.youtube.com/channel/UCKHKSD-yanY2ZwwU_4Tgf0w", categorie: "Parti"}
+- {plateforme: youtube, nom: "Brut", adresse: "https://www.youtube.com/c/brutofficiel", categorie: "Média jeune", a_confirmer: true}
+"""
+
+
+@pytest.fixture
+def conf(tmp_path):
+    (tmp_path / "chaines.yaml").write_text(CHAINES, encoding="utf-8")
+    shutil.copy(Path(config.DOSSIER_CONFIG) / "politique.yaml", tmp_path / "politique.yaml")
+    return config.charger(tmp_path)
+
+
+@pytest.fixture
+def connexion(tmp_path):
+    c = db.ouvrir(tmp_path / "grille.sqlite")
+    yield c
+    c.close()
+
+
+def routeur(methode, url, params):
+    ressource = url.removeprefix(YOUTUBE_API + "/")
+    if ressource == "channels":
+        if "forHandle" in params:
+            return Reponse(corps=API[f"channels_forHandle_{params['forHandle']}"])
+        return Reponse(corps=API["channels_id"])
+    if ressource == "playlistItems":
+        return Reponse(corps=API[f"playlistItems_{params['playlistId']}"])
+    if ressource == "videos":
+        demandes = params["id"].split(",")
+        return Reponse(corps={**API["videos"], "items": [v for v in API["videos"]["items"] if v["id"] in demandes]})
+    raise AssertionError(url)
+
+
+def test_direct_programme_a_la_bonne_heure_de_paris(conf, connexion):
+    rapport = youtube.collecter(conf, Session(routeur), connexion, MAINTENANT, cle_api="cle")
+    assert not rapport.interrompu
+    retenues = {e["id"]: e for e in rapport.retenues}
+    assert set(retenues) == {"youtube:direct_perchoir", "youtube:annonce_heure_ete", "youtube:meeting_termine"}
+
+    # Programmé à 18:00 UTC le 28 mars 2027, jour du passage à l'heure d'été : 20:00 à Paris.
+    annonce = retenues["youtube:annonce_heure_ete"]
+    assert annonce["debut"] == "2027-03-28T20:00:00+02:00"
+    assert (annonce["statut"], annonce["filtre"]) == ("annoncé", "mots-clés")
+    assert annonce["invites"] == ["Raphaël Glucksmann"]
+    assert annonce["lien"] == ["https://www.youtube.com/watch?v=annonce_heure_ete"]
+
+    direct = retenues["youtube:direct_perchoir"]
+    assert (direct["statut"], direct["filtre"], direct["debut"]) == ("en direct", "liste blanche", "2027-03-27T09:30:00+01:00")
+    assert retenues["youtube:meeting_termine"]["statut"] == "terminé"
+
+    # En base, avec la même heure de Paris.
+    debut = connexion.execute("SELECT debut FROM emissions WHERE id = 'youtube:annonce_heure_ete'").fetchone()[0]
+    assert debut == "2027-03-28T20:00:00+02:00"
+
+
+def test_chaine_c_introuvable_signalee(conf, connexion):
+    rapport = youtube.collecter(conf, Session(routeur), connexion, MAINTENANT, cle_api="cle")
+    assert rapport.a_confirmer == {"Brut": False}
+    assert any("Brut" in a and "@pseudo" in a for a in rapport.anomalies)
+    assert rapport.chaines_lues == 3
+
+
+def test_quota_economise(conf, connexion):
+    session = Session(routeur)
+    rapport = youtube.collecter(conf, session, connexion, MAINTENANT, cle_api="cle")
+    # 1 lot d'identifiants UC + 3 pseudos (dont Brut) + 3 playlists + 1 lot de vidéos
+    assert rapport.unites == 8
+    # Seconde collecte : chaînes déjà résolues, mais Brut (introuvable) est retenté.
+    session2 = Session(routeur)
+    rapport2 = youtube.collecter(conf, session2, connexion, MAINTENANT, cle_api="cle")
+    assert rapport2.unites == 5
+    assert all("search" not in url for _, url, _ in session.appels + session2.appels)
+
+
+def test_direct_sorti_de_la_playlist_reste_suivi(conf, connexion):
+    youtube.collecter(conf, Session(routeur), connexion, MAINTENANT, cle_api="cle")
+
+    def sans_annonce(methode, url, params):
+        if url.endswith("/playlistItems") and params["playlistId"] == "UUclemovitch00000000000":
+            return Reponse(corps={"items": [{"contentDetails": {"videoId": "annonce_non_politique"}}]})
+        return routeur(methode, url, params)
+
+    session = Session(sans_annonce)
+    youtube.collecter(conf, session, connexion, MAINTENANT, cle_api="cle")
+    ids_demandes = [p["id"] for _, url, p in session.appels if url.endswith("/videos")][0]
+    assert "annonce_heure_ete" in ids_demandes
+    statut = connexion.execute("SELECT statut FROM emissions WHERE id = 'youtube:annonce_heure_ete'").fetchone()[0]
+    assert statut == "annoncé"
+
+
+def test_quota_epuise_n_annule_rien(conf, connexion):
+    youtube.collecter(conf, Session(routeur), connexion, MAINTENANT, cle_api="cle")
+
+    def quota(methode, url, params):
+        if url.endswith("/videos"):
+            return Reponse(403, {"error": {"errors": [{"reason": "quotaExceeded"}]}})
+        return routeur(methode, url, params)
+
+    rapport = youtube.collecter(conf, Session(quota), connexion, MAINTENANT, cle_api="cle")
+    assert "quota" in rapport.interrompu
+    statut = connexion.execute("SELECT statut FROM emissions WHERE id = 'youtube:annonce_heure_ete'").fetchone()[0]
+    assert statut == "annoncé"
+
+
+def test_sans_cle(conf, connexion, monkeypatch):
+    monkeypatch.delenv("YOUTUBE_API_KEY", raising=False)
+    assert "YOUTUBE_API_KEY" in youtube.collecter(conf, Session(routeur), connexion, MAINTENANT).interrompu

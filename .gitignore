@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Base locale de la grille : sa conservation sera décidée au lot 5.
+data/
