@@ -1,6 +1,6 @@
 # Cahier des charges — Grille politique Présidentielle 2027
 
-Version du 7 octobre 2026
+Version du 8 octobre 2026
 
 ## Objectif
 
@@ -113,7 +113,7 @@ Choix techniques proposés à Claude Code :
 - **Planification** : des tâches planifiées GitHub, une par heure pour la collecte, une par jour pour l'email.
 - **Page web** : page statique régénérée après chaque collecte et publiée sur GitHub Pages, donc rapide et sans risque de panne à l'affichage.
 - **Email** : envoi par un service SMTP du commerce, gratuit à ce volume.
-- **Secrets** : clés d'API dans des variables d'environnement chiffrées de GitHub (secrets), jamais dans le code.
+- **Secrets** : clés d'API et adresse email dans des variables d'environnement chiffrées de GitHub (secrets), jamais dans le code ni dans la documentation.
 
 ## Modèle de données
 
@@ -156,7 +156,7 @@ La page est une application web installable (PWA) : icône sur l'écran d'accuei
 
 **Email quotidien**
 
-- Envoi chaque matin à 7 h, heure de Paris, à [adresse retirée].
+- Envoi chaque matin à 7 h, heure de Paris, à l'adresse enregistrée dans le secret GitHub `EMAIL_DESTINATAIRE` (jamais en clair dans le dépôt, qui est public).
 - Contenu : la grille du jour triée par heure, puis les temps forts des 3 jours suivants.
 - Chaque ligne renvoie vers le lien de visionnage.
 - En option pour plus tard : une alerte 15 minutes avant un débat entre candidats.
@@ -194,13 +194,17 @@ Le risque principal est la fragilité des sources sans API : une page de program
 | Directs non annoncés | Meeting lancé sans programmation préalable | Vérification de l'état « en direct » des chaînes de candidats à chaque collecte |
 | Conditions d'utilisation des sites | Lecture automatique de pages parfois interdite | Préférer API et RSS ; rythme lent ; usage strictement personnel, grille non publiée |
 
-À décider avant de lancer le lot 1 :
+Décisions (mises à jour le 8 octobre 2026) :
 
-- [ ] Valider l'hébergement GitHub en créant le compte et le dépôt du projet.
+- [x] Valider l'hébergement GitHub en créant le compte et le dépôt du projet : dépôt public créé le 8 octobre 2026. Public, il bénéficie des tâches planifiées GitHub sans limite de minutes.
 - [x] Liste des chaînes YouTube et Twitch fournie ; sites de web TV à ajouter si besoin.
-- [x] Choisir l'adresse qui reçoit l'email du matin : [adresse retirée].
-- [ ] Accepter que la page soit publique sur GitHub, sans mot de passe.
-- [ ] Accepter ou non le classement des cas ambigus par l'API Claude, qui a un coût à l'usage.
+- [x] Choisir l'adresse qui reçoit l'email du matin : choisie, enregistrée dans le secret GitHub `EMAIL_DESTINATAIRE` pour ne pas l'exposer dans le dépôt public.
+- [x] Accepter que la page soit publique sur GitHub, sans mot de passe : accepté. La page demandera aux moteurs de recherche de ne pas l'indexer, et son adresse ne sera diffusée à personne. En cas de gêne, repli vers la Freebox.
+- [ ] Accepter ou non le classement des cas ambigus par l'API Claude, qui a un coût à l'usage : accord de principe, décision finale au lot 6, selon le nombre de cas que les deux premiers filtres laissent passer. Modèle envisagé : Claude Haiku 5.5, le moins cher (de l'ordre de quelques centimes par jour), avec un plafond de dépenses de 5 $ fixé dans la console. Prérequis : un compte sur console.anthropic.com avec du crédit prépayé (l'abonnement Claude ne couvre pas l'API) et une clé dans le secret `ANTHROPIC_API_KEY`.
+
+À décider au lot 5 :
+
+- [ ] Comment conserver la base : l'enregistrer dans le dépôt après chaque collecte, soit environ 24 fois par jour, ferait grossir l'historique Git. Piste : une branche dédiée aux données qui ne garde que la dernière version.
 
 ---
 
