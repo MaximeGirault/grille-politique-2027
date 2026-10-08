@@ -71,8 +71,9 @@ partis:
 # Filtre 1 : liste blanche.
 liste_blanche:
   # Toute émission de ces chaînes est retenue (nom exact dans chaines.yaml).
+  # LCP / Public Sénat (télévision) n'y est plus : trop de documentaires.
+  # Ses émissions politiques passent par les mots-clés et la liste des émissions.
   chaines:
-    - "LCP / Public Sénat"
     - "LCP-Assemblée nationale"
   # Toute émission d'une chaîne de ces catégories est retenue.
   categories_de_chaine:

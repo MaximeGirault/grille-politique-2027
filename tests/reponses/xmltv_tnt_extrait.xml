@@ -48,10 +48,15 @@
     <title lang="fr">BFM Politique</title>
     <desc lang="fr">Gabriel Attal est l'invité de l'émission.</desc>
   </programme>
-  <!-- Chaîne en liste blanche : tout est retenu -->
+  <!-- LCP : émission en liste blanche, retenue -->
   <programme start="20270315220000 +0100" stop="20270315230000 +0100" channel="LaChaineParlementaire.fr">
+    <title lang="fr">Questions au gouvernement</title>
+    <desc lang="fr">Séance à l'Assemblée nationale.</desc>
+  </programme>
+  <!-- LCP : documentaire sans mot-clé, plus retenu depuis que la chaîne a quitté la liste blanche -->
+  <programme start="20270315230000 +0100" stop="20270316000000 +0100" channel="LaChaineParlementaire.fr">
     <title lang="fr">Documentaire</title>
-    <desc lang="fr">Un portrait de l'Assemblée.</desc>
+    <desc lang="fr">Un portrait des métiers de la mer.</desc>
   </programme>
   <!-- Émission en liste blanche, le lendemain -->
   <programme start="20270316074000 +0100" stop="20270316080000 +0100" channel="France2.fr">
