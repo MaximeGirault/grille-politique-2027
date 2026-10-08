@@ -38,7 +38,8 @@ GitHub.
 
 **Twitch (`TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`)**
 1. dev.twitch.tv/console, connecté avec un compte Twitch (l'authentification à deux facteurs est exigée).
-2. « Enregistrer votre application » : nom libre, URL de redirection `http://localhost`,
+2. « Enregistrer votre application » : nom libre, URL de redirection `https://localhost` (Twitch exige HTTPS ;
+   elle ne sert pas ici, le champ est seulement obligatoire),
    catégorie « Other », type de client « Confidentiel ».
 3. « Gérer » : copier l'identifiant client, puis « Nouveau secret » et copier le secret.
 
