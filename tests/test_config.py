@@ -8,7 +8,9 @@ from grille import config
 def test_configuration_du_depot_sans_anomalie():
     conf = config.charger()
     assert conf.anomalies == []
-    assert len(conf.chaines) == 141  # 11 tv + 25 prioritaires + 105 de l'annexe
+    # Le nombre exact varie au fil des ajouts et retraits dans chaines.yaml.
+    assert sum(c.plateforme == "tv" for c in conf.chaines) == 11
+    assert len(conf.chaines) > 100
     assert {c.plateforme for c in conf.chaines} == {"tv", "youtube", "twitch"}
     assert "Mélenchon" in conf.noms_a_reperer()
 

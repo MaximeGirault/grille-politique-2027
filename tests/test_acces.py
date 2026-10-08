@@ -78,7 +78,8 @@ def test_twitch_ok_signale_les_comptes_introuvables(conf, monkeypatch):
     })
     r = acces.verifier_twitch(conf, session)
     assert r.etat == "ok", r.detail
-    assert "2/20" in r.detail and "mediapart" in r.detail
+    nb_twitch = sum(c.plateforme == "twitch" for c in conf.chaines)
+    assert f"2/{nb_twitch}" in r.detail and "mediapart" in r.detail
     en_tetes = session.appels[1][1]["headers"]
     assert en_tetes == {"Authorization": "Bearer jeton-de-test", "Client-Id": "id"}
 
