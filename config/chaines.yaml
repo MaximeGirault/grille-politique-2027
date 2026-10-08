@@ -174,8 +174,10 @@ chaines:
 - {plateforme: twitch, nom: "Sardoche", adresse: "https://www.twitch.tv/sardoche", categorie: "Streamer, jeux vidéo et politique, droite libérale"}
 - {plateforme: twitch, nom: "Paroles d'Honneur", adresse: "https://www.twitch.tv/parolesdhonneur", categorie: "Gauche décoloniale", a_confirmer: true}
 - {plateforme: twitch, nom: "Usul", adresse: "https://www.twitch.tv/usul2000", categorie: "Gauche", a_confirmer: true}
-- {plateforme: twitch, nom: "Dany et Raz", adresse: "https://www.twitch.tv/danyetraz", categorie: "Gauche", a_confirmer: true}
+# Compte introuvable sur Twitch (vérifié le 8 octobre 2026) : retirer le « # » si l'adresse est corrigée.
+# - {plateforme: twitch, nom: "Dany et Raz", adresse: "https://www.twitch.tv/danyetraz", categorie: "Gauche", a_confirmer: true}
 - {plateforme: twitch, nom: "Le Média", adresse: "https://www.twitch.tv/lemediatv", categorie: "Gauche", a_confirmer: true}
 - {plateforme: twitch, nom: "Public Sénat", adresse: "https://www.twitch.tv/publicsenat", categorie: "Chaîne parlementaire", a_confirmer: true}
-- {plateforme: twitch, nom: "Le Monde", adresse: "https://www.twitch.tv/lemondefr", categorie: "Presse, généraliste", a_confirmer: true}
+# Compte introuvable sur Twitch (vérifié le 8 octobre 2026) : retirer le « # » si l'adresse est corrigée.
+# - {plateforme: twitch, nom: "Le Monde", adresse: "https://www.twitch.tv/lemondefr", categorie: "Presse, généraliste", a_confirmer: true}
 - {plateforme: twitch, nom: "ARTE", adresse: "https://www.twitch.tv/arte", categorie: "Média public", a_confirmer: true}
