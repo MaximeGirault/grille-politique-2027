@@ -59,3 +59,17 @@ def test_manifeste_et_service_worker_coherents(tmp_path):
     for icone in icones | {"index.html", "app.js", "style.css"}:
         assert (page.MODELE / icone).exists()
         assert f'"{icone}"' in sw  # mis en cache pour le mode hors connexion
+
+
+def test_logos_de_la_base_et_de_la_configuration(connexion, tmp_path):
+    db.enregistrer_collecte(connexion, [_emission("tv:a", MAINTENANT + timedelta(hours=2)),
+                                        _emission("tv:b", MAINTENANT + timedelta(hours=3), chaine="BFMTV")],
+                            "tv", set(), MAINTENANT)
+    db.noter_logos(connexion, {"France 2": "https://source/france2.png", "BFMTV": "", "TF1": "https://source/tf1.png"},
+                   MAINTENANT)
+    conf = config.charger()
+    conf.chaines = [c if c.nom != "BFMTV" else type(c)(**{**c.__dict__, "logo": "https://moi/bfm.png"})
+                    for c in conf.chaines]
+    donnees = _donnees_de(page.generer(connexion, conf, MAINTENANT, tmp_path / "site"))
+    # TF1 n'a pas d'émission : son logo n'est pas embarqué ; BFMTV prend le logo imposé.
+    assert donnees["logos"] == {"France 2": "https://source/france2.png", "BFMTV": "https://moi/bfm.png"}

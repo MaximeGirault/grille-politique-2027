@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 CHEMIN_BASE = Path(__file__).resolve().parent.parent / "data" / "grille.sqlite"
-VERSION_SCHEMA = 3
+VERSION_SCHEMA = 4
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS emissions (
@@ -58,6 +58,13 @@ CREATE INDEX IF NOT EXISTS collectes_horodatage ON collectes (horodatage);
 CREATE TABLE IF NOT EXISTS envois (
     jour        TEXT PRIMARY KEY,                 -- AAAA-MM-JJ, heure de Paris
     envoye_le   TEXT NOT NULL
+);
+
+-- Version 4 : logo de chaque chaîne (adresse d'image fournie par la source).
+CREATE TABLE IF NOT EXISTS logos (
+    chaine      TEXT PRIMARY KEY,                 -- nom de la chaîne dans chaines.yaml
+    url         TEXT NOT NULL,
+    mis_a_jour  TEXT NOT NULL
 );
 """
 
@@ -203,3 +210,22 @@ def deja_envoye(connexion: sqlite3.Connection, jour: str) -> bool:
 def noter_envoi(connexion: sqlite3.Connection, jour: str, maintenant: datetime) -> None:
     connexion.execute("INSERT OR REPLACE INTO envois VALUES (?, ?)", (jour, maintenant.isoformat(timespec="seconds")))
     connexion.commit()
+
+
+def noter_logos(connexion: sqlite3.Connection, logos: dict[str, str], maintenant: datetime) -> None:
+    """Mémorise les logos (nom de chaîne → adresse d'image).
+
+    Une adresse vide est gardée aussi : elle note que la source n'a pas de logo,
+    pour ne pas le redemander (et dépenser du quota) à chaque collecte.
+    """
+    horodatage = maintenant.isoformat(timespec="seconds")
+    connexion.executemany(
+        "INSERT OR REPLACE INTO logos VALUES (?, ?, ?)",
+        [(chaine, url or "", horodatage) for chaine, url in logos.items()],
+    )
+    connexion.commit()
+
+
+def logos(connexion: sqlite3.Connection, avec_vides: bool = False) -> dict[str, str]:
+    """Nom de chaîne → adresse du logo (les chaînes sans logo seulement si `avec_vides`)."""
+    return {c: u for c, u in connexion.execute("SELECT chaine, url FROM logos") if u or avec_vides}

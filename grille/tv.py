@@ -69,10 +69,12 @@ def _texte(element: ET.Element, balise: str) -> str:
     return next((c.text.strip() for c in candidats if c.text), "")
 
 
-def lire_xmltv(flux: BinaryIO, chaines_voulues: set[str] | None) -> tuple[Iterator[Programme], set[str]]:
+def lire_xmltv(flux: BinaryIO, chaines_voulues: set[str] | None,
+               icones: dict[str, str] | None = None) -> tuple[Iterator[Programme], set[str]]:
     """Lit le fichier au fil de l'eau (il est gros) ; renvoie les programmes et, à la fin, les chaînes vues.
 
-    `chaines_voulues` à None : toutes les chaînes du guide.
+    `chaines_voulues` à None : toutes les chaînes du guide. `icones`, s'il est fourni,
+    reçoit l'adresse du logo de chaque chaîne voulue (balise <icon src> du guide).
     """
     chaines_vues: set[str] = set()
 
@@ -93,6 +95,11 @@ def lire_xmltv(flux: BinaryIO, chaines_voulues: set[str] | None) -> tuple[Iterat
                     )
                 element.clear()
             elif element.tag == "channel":
+                icone = element.find("icon")
+                identifiant = element.get("id", "")
+                if icones is not None and icone is not None and icone.get("src") and (
+                        chaines_voulues is None or identifiant in chaines_voulues):
+                    icones[identifiant] = icone.get("src")
                 element.clear()
 
     return programmes(), chaines_vues
@@ -131,7 +138,8 @@ def collecter(config: Configuration, chemin: Path, connexion, maintenant: dateti
     rapport = Rapport()
 
     with _ouvrir(chemin) as flux:
-        programmes, chaines_vues = lire_xmltv(flux, set(chaines_tv))
+        icones: dict[str, str] = {}
+        programmes, chaines_vues = lire_xmltv(flux, set(chaines_tv), icones)
         for p in programmes:
             rapport.lus += 1
             if p.debut >= fin_horizon or (p.fin or p.debut) <= maintenant:
@@ -162,6 +170,7 @@ def collecter(config: Configuration, chemin: Path, connexion, maintenant: dateti
                 }
             )
 
+    db.noter_logos(connexion, {chaines_tv[x].nom: url for x, url in icones.items()}, maintenant)
     rapport.chaines_absentes = sorted(c.nom for x, c in chaines_tv.items() if x not in chaines_vues)
     couvertes = {chaines_tv[x].nom for x in chaines_vues}
     a_ecrire = [{k: v for k, v in e.items() if k != "motif"} for e in rapport.retenues]

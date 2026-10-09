@@ -114,3 +114,8 @@ def test_chercher_explique_le_verdict(conf, tmp_path):
     assert verdicts[("France 2", "Le grand débat")].startswith("RETENUE")
     assert verdicts[("Gulli.fr", "Débat junior")] == "chaîne non configurée (Gulli.fr)"
     assert ("France 2", "Débat matinal") not in verdicts  # terminé avant « maintenant »
+
+
+def test_logo_du_guide(conf, connexion, tmp_path):
+    tv.collecter(conf, _gz(tmp_path, EXTRAIT.read_bytes()), connexion, MAINTENANT)
+    assert db.logos(connexion) == {"France 2": "https://example.org/logos/france2.png"}

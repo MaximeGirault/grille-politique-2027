@@ -210,6 +210,7 @@ Décidé au lot 5 :
 Ajouté après le lot 5 :
 
 - [ ] Radios : collecteur Radio France (API officielle), puis les autres stations susceptibles de diffuser des débats politiques.
+- [ ] Lot 6 : lire les invités annoncés sur les sites des chaînes (france.tv et autres) quand le guide télévision ne les donne pas, comme pour Franc-jeu (France 2).
 
 ---
 
