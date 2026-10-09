@@ -36,6 +36,11 @@ def _contient(texte_normalise: str, terme_normalise: str) -> bool:
     return bool(terme_normalise) and f" {terme_normalise} " in f" {texte_normalise} "
 
 
+def _commence_par(texte_normalise: str, debut_normalise: str) -> bool:
+    """« franc jeu gabriel attal » commence par « franc jeu », mais « franchise » non."""
+    return bool(debut_normalise) and f"{texte_normalise} ".startswith(f"{debut_normalise} ")
+
+
 @dataclass
 class Decision:
     filtre: str  # LISTE_BLANCHE ou MOTS_CLES
@@ -49,7 +54,11 @@ class FiltrePolitique:
         lb = config.liste_blanche
         self._chaines_blanches = {normaliser(n) for n in lb.get("chaines") or []}
         self._categories_blanches = [normaliser(c) for c in lb.get("categories_de_chaine") or []]
-        self._emissions_blanches = {normaliser(e) for e in lb.get("emissions") or []}
+        # (titre normalisé, chaîne normalisée ou "" pour toutes les chaînes)
+        self._emissions_blanches = [
+            (normaliser(e), "") if isinstance(e, str) else (normaliser(e["titre"]), normaliser(e.get("chaine", "")))
+            for e in lb.get("emissions") or []
+        ]
         self._mots = [(m, normaliser(m)) for m in config.mots_cles + config.noms_a_reperer()]
         self._mots_titre = [(m, normaliser(m)) for m in config.mots_cles_titre]
         # Personnes repérables comme invités : forme affichée + toutes ses formes normalisées.
@@ -79,7 +88,9 @@ class FiltrePolitique:
             motif = f"chaîne « {chaine.nom} »"
         elif any(normaliser(chaine.categorie).startswith(c) for c in self._categories_blanches if c):
             motif = f"catégorie de chaîne « {chaine.categorie} »"
-        elif titre_n in self._emissions_blanches:
+        elif any(
+            _commence_par(titre_n, t) and (not c or c == normaliser(chaine.nom)) for t, c in self._emissions_blanches
+        ):
             motif = f"émission « {titre} »"
         if motif:
             return Decision(LISTE_BLANCHE, self.categorie(titre, description), self.invites(texte), motif)

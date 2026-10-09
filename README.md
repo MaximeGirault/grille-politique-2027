@@ -20,6 +20,7 @@ python3 -m grille collecter-youtube  # directs YouTube programmés et en cours d
 python3 -m grille collecter-twitch   # chaînes Twitch en direct et plannings publiés
 python3 -m grille collecter       # les trois sources à la suite ; si l'une tombe, les autres continuent
 python3 -m grille lister          # affiche la grille enregistrée (aujourd'hui et les 7 jours suivants)
+python3 -m grille chercher-tv "Franc-jeu"   # trouve une émission dans le guide TV et dit si elle est retenue
 python3 -m grille page            # génère la page web dans le dossier site/
 python3 -m grille apercu          # génère la page et l'affiche sur le téléphone (même Wi-Fi)
 python3 -m pytest                 # tests
@@ -70,5 +71,6 @@ l'adapter, puis « Commit changes ».
 Tout se passe dans `config/politique.yaml`. Si une émission sans rapport apparaît,
 `collecter-tv --motifs` montre la règle responsable : retirer ou préciser le mot-clé,
 le déplacer dans `mots_cles_titre` (cherché dans le titre seulement), ou marquer le
-parti `ambigu: true`. Si une émission politique manque, ajouter son
-titre exact sous `liste_blanche: emissions:`.
+parti `ambigu: true`. Si une émission politique manque, `chercher-tv "mot du titre"` montre son titre exact
+dans le guide : l'ajouter sous `liste_blanche: emissions:`, éventuellement limitée à
+une chaîne (`{titre: "Face à face", chaine: "BFMTV"}`).

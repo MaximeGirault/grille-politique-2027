@@ -69,15 +69,18 @@ def _texte(element: ET.Element, balise: str) -> str:
     return next((c.text.strip() for c in candidats if c.text), "")
 
 
-def lire_xmltv(flux: BinaryIO, chaines_voulues: set[str]) -> tuple[Iterator[Programme], set[str]]:
-    """Lit le fichier au fil de l'eau (il est gros) ; renvoie les programmes et, à la fin, les chaînes vues."""
+def lire_xmltv(flux: BinaryIO, chaines_voulues: set[str] | None) -> tuple[Iterator[Programme], set[str]]:
+    """Lit le fichier au fil de l'eau (il est gros) ; renvoie les programmes et, à la fin, les chaînes vues.
+
+    `chaines_voulues` à None : toutes les chaînes du guide.
+    """
     chaines_vues: set[str] = set()
 
     def programmes() -> Iterator[Programme]:
         for _, element in ET.iterparse(flux, events=("end",)):
             if element.tag == "programme":
                 chaine = element.get("channel", "")
-                if chaine in chaines_voulues:
+                if chaines_voulues is None or chaine in chaines_voulues:
                     chaines_vues.add(chaine)
                     fin = element.get("stop")
                     yield Programme(
@@ -152,7 +155,7 @@ def collecter(config: Configuration, chemin: Path, connexion, maintenant: dateti
                     "chaine": chaine.nom,
                     "categorie": decision.categorie,
                     "invites": decision.invites,
-                    "lien": [chaine.direct] if chaine.direct else [],
+                    "lien": list(chaine.direct),
                     "statut": statut(p.debut, p.fin, maintenant),
                     "filtre": decision.filtre,
                     "motif": decision.motif,
@@ -164,3 +167,38 @@ def collecter(config: Configuration, chemin: Path, connexion, maintenant: dateti
     a_ecrire = [{k: v for k, v in e.items() if k != "motif"} for e in rapport.retenues]
     rapport.annulees = db.enregistrer_collecte(connexion, a_ecrire, "tv", couvertes, maintenant)
     return rapport
+
+
+def chercher(config: Configuration, chemin: Path, texte: str, maintenant: datetime, limite: int = 60) -> list[dict]:
+    """Programmes à venir dont le titre, le sous-titre ou la description contient `texte`.
+
+    Toutes les chaînes du guide sont parcourues, configurées ou non, et chaque
+    résultat dit ce que le filtre en ferait : utile pour régler politique.yaml.
+    """
+    from grille.filtre import normaliser
+
+    chaines_tv = {c.cle["xmltv_id"]: c for c in config.chaines if c.plateforme == "tv"}
+    filtre = FiltrePolitique(config)
+    cherche = normaliser(texte)
+    maintenant = maintenant.astimezone(PARIS)
+    resultats = []
+    with _ouvrir(chemin) as flux:
+        programmes, _ = lire_xmltv(flux, None)
+        for p in programmes:
+            if (p.fin or p.debut) <= maintenant:
+                continue
+            if cherche not in normaliser(f"{p.titre} {p.sous_titre} {p.description}"):
+                continue
+            chaine = chaines_tv.get(p.chaine_xmltv)
+            if chaine is None:
+                verdict = f"chaîne non configurée ({p.chaine_xmltv})"
+            elif config.tv_heures_masquees and config.tv_heures_masquees[0] <= p.debut.hour < config.tv_heures_masquees[1]:
+                verdict = "masquée (programme de nuit)"
+            else:
+                decision = filtre.decider(chaine, p.titre, f"{p.sous_titre}\n{p.description}")
+                verdict = f"RETENUE : {decision.filtre}, {decision.motif}" if decision else "écartée : aucun mot-clé"
+            resultats.append({"debut": p.debut, "chaine": chaine.nom if chaine else p.chaine_xmltv, "titre": p.titre,
+                              "sous_titre": p.sous_titre, "description": p.description, "verdict": verdict})
+            if len(resultats) >= limite:
+                break
+    return sorted(resultats, key=lambda r: r["debut"])

@@ -36,8 +36,8 @@ class Chaine:
     adresse: str
     categorie: str
     a_confirmer: bool = False
-    # Adresse pour regarder le direct (facultative, utile surtout pour la télévision).
-    direct: str = ""
+    # Adresses pour regarder le direct (facultatives, utiles surtout pour la télévision).
+    direct: tuple[str, ...] = ()
     # Identifiant extrait de l'adresse : handle ou ID YouTube, login Twitch, ID XMLTV…
     cle: dict = field(default_factory=dict, hash=False, compare=False)
 
@@ -119,10 +119,16 @@ def _lire_chaines(brut: object, anomalies: list[str]) -> list[Chaine]:
         if (plateforme, adresse.lower()) in vues:
             anomalies.append(f"{etiquette} : doublon de « {adresse} », ignoré")
             continue
-        direct = str(ligne.get("direct") or "").strip()
-        if direct and not _WEB.match(direct):
-            anomalies.append(f"{etiquette} : adresse de direct invalide « {direct} », ignorée")
-            direct = ""
+        # « direct » : une adresse, ou une liste quand la chaîne partage son canal (LCP / Public Sénat).
+        brut = ligne.get("direct") or []
+        direct = []
+        for d in [brut] if isinstance(brut, str) else brut:
+            d = str(d).strip()
+            if _WEB.match(d):
+                direct.append(d)
+            else:
+                anomalies.append(f"{etiquette} : adresse de direct invalide « {d} », ignorée")
+        direct = tuple(direct)
         vues.add((plateforme, adresse.lower()))
         chaines.append(
             Chaine(
@@ -164,6 +170,9 @@ def charger(dossier: Path = DOSSIER_CONFIG) -> Configuration:
     if not isinstance(liste_blanche, dict):
         raise ErreurConfig("politique.yaml : « liste_blanche: » doit contenir des rubriques")
 
+    for e in liste_blanche.get("emissions") or []:
+        if not (isinstance(e, str) or (isinstance(e, dict) and isinstance(e.get("titre"), str))):
+            raise ErreurConfig(f"politique.yaml, liste blanche : émission illisible {e!r} (texte ou {{titre: …, chaine: …}})")
     noms_chaines = {c.nom for c in chaines}
     for nom in liste_blanche.get("chaines") or []:
         if nom not in noms_chaines:
