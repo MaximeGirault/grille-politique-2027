@@ -1,0 +1,58 @@
+# Collecte horaire : télévision, YouTube et Twitch, puis page web publiée sur GitHub Pages.
+name: Collecte horaire
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # chaque heure à :17 (l'heure pile est la plus encombrée chez GitHub)
+  workflow_dispatch:         # bouton « Run workflow » pour lancer une collecte à la main
+
+permissions:
+  contents: write            # enregistrer la base sur la branche donnees
+  pages: write
+  id-token: write
+
+# Une seule tâche à la fois touche la base (collecte ou email du matin).
+concurrency:
+  group: donnees
+  cancel-in-progress: false
+
+jobs:
+  collecter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Récupérer la base
+        run: .github/scripts/base.sh recuperer
+      - name: Collecter (une source en panne n'arrête pas les autres)
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+        run: |
+          python -m grille collecter || echo "::warning::Au moins une source a échoué, voir le détail ci-dessus et l'email du matin."
+      - name: Générer la page
+        run: python -m grille page
+      - name: Enregistrer la base
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .github/scripts/base.sh enregistrer
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  publier:
+    needs: collecter
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - id: deploiement
+        uses: actions/deploy-pages@v5

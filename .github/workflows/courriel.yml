@@ -1,0 +1,80 @@
+# Email du matin à 7 h, heure de Paris.
+# GitHub ne connaît que l'heure UTC et ses déclenchements prennent souvent du retard :
+# la tâche démarre vers 6 h 30 (deux horaires, un par saison), attend 7 h, puis envoie.
+# Un seul email par jour : le second déclenchement voit que l'envoi est fait.
+name: Email du matin
+
+on:
+  schedule:
+    - cron: "30 4 * * *"   # 6 h 30 à Paris en heure d'été (UTC+2)
+    - cron: "30 5 * * *"   # 6 h 30 à Paris en heure d'hiver (UTC+1)
+  workflow_dispatch:
+    inputs:
+      forcer:
+        description: "Envoyer tout de suite, même si l'email du jour est déjà parti"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  attendre:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      envoyer: ${{ steps.attente.outputs.envoyer }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - id: attente
+        name: Attendre 7 h (heure de Paris)
+        run: |
+          if [ "${{ inputs.forcer }}" = "true" ]; then
+            echo "envoyer=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          attente=$(python -m grille attente-7h)
+          if [ "$attente" = "hors-plage" ]; then
+            echo "Hors de la plage 6 h – 10 h à Paris : c'est le déclenchement prévu pour l'autre saison."
+            echo "envoyer=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Attente de ${attente} s avant 7 h"
+            sleep "$attente"
+            echo "envoyer=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  envoyer:
+    needs: attendre
+    if: needs.attendre.outputs.envoyer == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: donnees
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Récupérer la base
+        run: .github/scripts/base.sh recuperer
+      - name: Envoyer l'email
+        env:
+          SMTP_SERVEUR: ${{ secrets.SMTP_SERVEUR }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_UTILISATEUR: ${{ secrets.SMTP_UTILISATEUR }}
+          SMTP_MOT_DE_PASSE: ${{ secrets.SMTP_MOT_DE_PASSE }}
+          EMAIL_EXPEDITEUR: ${{ secrets.EMAIL_EXPEDITEUR }}
+          EMAIL_DESTINATAIRE: ${{ secrets.EMAIL_DESTINATAIRE }}
+          ADRESSE_PAGE: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: python -m grille courriel ${{ inputs.forcer && '--forcer' || '' }}
+      - name: Enregistrer la base (date d'envoi)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .github/scripts/base.sh enregistrer
