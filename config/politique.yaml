@@ -23,6 +23,7 @@ candidats:
   - {nom: "Florian Philippot", alias: ["Philippot"], parti: "Les Patriotes", statut: "pressenti"}
   - {nom: "François Asselineau", alias: ["Asselineau"], parti: "UPR", statut: "pressenti"}
   - {nom: "Jean Lassalle", alias: ["Lassalle"], parti: "", statut: "pressenti"}
+  - {nom: "Nicolas Dupont-Aignan", alias: ["Dupont-Aignan"], parti: "Debout la France", statut: "à vérifier"}
   # Primaire de la gauche (PS, Place publique, GRS) : 9 et 10 octobre 2026, second tour
   # éventuel les 16 et 17 octobre. Mettre à jour les statuts après le résultat.
   # Autres noms cités dans l'annexe ; statut à vérifier quand il est indiqué.
