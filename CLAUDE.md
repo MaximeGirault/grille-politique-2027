@@ -14,6 +14,7 @@ demandé, puis s'arrêter pour faire vérifier le critère « Terminé quand ».
 - Configuration modifiable sans code : `config/chaines.yaml` (une ligne par chaîne) et `config/politique.yaml`.
 - Base SQLite `data/grille.sqlite` (ignorée par Git jusqu'au lot 5), table `emissions`, plus `chaines_resolues` qui mémorise les identifiants YouTube (`grille/db.py`). Heures en ISO 8601, fuseau Europe/Paris.
 - Collecteurs : `grille/tv.py` (lot 2), `grille/youtube.py` et `grille/twitch.py` (lot 3). Filtre politique commun : `grille/filtre.py`.
+- Page web (lot 4) : `grille/page.py` intègre les données dans `grille/modele_page/index.html` ; sortie dans `site/` (ignoré par Git). Aperçu : `python -m grille apercu`.
 - Secrets en local : fichier `.env` (modèle `.env.exemple`), ignoré par Git.
 - Secrets uniquement en variables d'environnement : `YOUTUBE_API_KEY`, `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, plus tard `EMAIL_DESTINATAIRE` et `ANTHROPIC_API_KEY`. Le dépôt est public : aucune adresse email ni clé dans les fichiers.
 - Points d'accès et quotas confirmés : `docs/VERIFICATIONS.md`.

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1f3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grille 2027">
+<title>Grille politique 2027</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="entete">
+  <div class="titre-ligne">
+    <h1>Grille politique 2027</h1>
+    <button id="bouton-filtres" class="bouton-filtres" aria-expanded="false" aria-controls="filtres">Filtres</button>
+  </div>
+  <p id="fraicheur" class="fraicheur"></p>
+  <nav id="jours" class="jours" aria-label="Jours"></nav>
+  <section id="filtres" class="filtres" hidden>
+    <div class="groupe" id="filtre-categories"><span class="etiquette">Catégorie</span></div>
+    <div class="groupe" id="filtre-plateformes"><span class="etiquette">Plateforme</span></div>
+    <div class="groupe">
+      <label class="etiquette" for="filtre-candidat">Candidat</label>
+      <select id="filtre-candidat"><option value="">Tous</option></select>
+    </div>
+    <button id="tout-afficher" class="lien-discret">Tout réafficher</button>
+  </section>
+</header>
+<main id="grille" class="grille"></main>
+<noscript><p class="vide">Cette page a besoin de JavaScript pour afficher la grille.</p></noscript>
+<script id="donnees" type="application/json">__DONNEES__</script>
+<script src="app.js"></script>
+</body>
+</html>
