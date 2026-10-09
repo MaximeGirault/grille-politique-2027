@@ -164,6 +164,9 @@ def charger(dossier: Path = DOSSIER_CONFIG) -> Configuration:
     if not isinstance(liste_blanche, dict):
         raise ErreurConfig("politique.yaml : « liste_blanche: » doit contenir des rubriques")
 
+    for e in liste_blanche.get("emissions") or []:
+        if not (isinstance(e, str) or (isinstance(e, dict) and isinstance(e.get("titre"), str))):
+            raise ErreurConfig(f"politique.yaml, liste blanche : émission illisible {e!r} (texte ou {{titre: …, chaine: …}})")
     noms_chaines = {c.nom for c in chaines}
     for nom in liste_blanche.get("chaines") or []:
         if nom not in noms_chaines:

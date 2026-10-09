@@ -106,3 +106,11 @@ def test_programmes_de_nuit_masques(conf, connexion, tmp_path):
     rapport = tv.collecter(conf, _gz(tmp_path, nuit.encode("utf-8")), connexion, MAINTENANT)
     assert "tv:France2.fr:202703160200" not in {e["id"] for e in rapport.retenues}
     assert rapport.masques >= 1
+
+
+def test_chercher_explique_le_verdict(conf, tmp_path):
+    resultats = tv.chercher(conf, _gz(tmp_path, EXTRAIT.read_bytes()), "débat", MAINTENANT)
+    verdicts = {(r["chaine"], r["titre"]): r["verdict"] for r in resultats}
+    assert verdicts[("France 2", "Le grand débat")].startswith("RETENUE")
+    assert verdicts[("Gulli.fr", "Débat junior")] == "chaîne non configurée (Gulli.fr)"
+    assert ("France 2", "Débat matinal") not in verdicts  # terminé avant « maintenant »

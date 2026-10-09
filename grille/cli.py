@@ -223,12 +223,21 @@ def cmd_page(args: argparse.Namespace) -> int:
 
 
 def _adresse_locale() -> str:
-    """Adresse du Mac sur le réseau local (aucun paquet n'est envoyé)."""
+    """Adresse du Mac sur le Wi-Fi ; un VPN actif fausserait la méthode générique."""
     import socket
+    import subprocess
 
+    for interface in ("en0", "en1"):  # Wi-Fi et Ethernet sur Mac
+        try:
+            adresse = subprocess.run(["ipconfig", "getifaddr", interface], capture_output=True, text=True,
+                                     timeout=5).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            break  # pas sur un Mac
+        if adresse:
+            return adresse
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         try:
-            s.connect(("192.0.2.1", 80))
+            s.connect(("192.0.2.1", 80))  # aucun paquet n'est envoyé
             return s.getsockname()[0]
         except OSError:
             return "127.0.0.1"
@@ -251,6 +260,35 @@ def cmd_apercu(args: argparse.Namespace) -> int:
             serveur.serve_forever()
         except KeyboardInterrupt:
             print("\nAperçu arrêté.")
+    return 0
+
+
+def cmd_chercher_tv(args: argparse.Namespace) -> int:
+    """Montre comment une émission figure dans le guide et ce que le filtre en fait."""
+    try:
+        conf = config.charger(args.config)
+    except config.ErreurConfig as e:
+        print(f"ERREUR de configuration : {e}")
+        return 1
+    chemin = args.fichier
+    if not chemin:
+        try:
+            chemin = tv.telecharger(requests.Session())
+        except requests.RequestException as e:
+            print(f"ERREUR guide télévision inaccessible ({e})")
+            return 1
+    try:
+        resultats = tv.chercher(conf, chemin, args.texte, datetime.now(tv.PARIS))
+    finally:
+        if not args.fichier:
+            chemin.unlink(missing_ok=True)
+    print(f"{len(resultats)} programme(s) à venir contenant « {args.texte} » :")
+    for r in resultats:
+        print(f"\n  {JOURS[r['debut'].weekday()]} {r['debut']:%d/%m %H:%M}  {r['chaine']}")
+        print(f"    Titre : {r['titre']}" + (f" — {r['sous_titre']}" if r["sous_titre"] else ""))
+        if r["description"]:
+            print(f"    Description : {r['description'][:160]}")
+        print(f"    → {r['verdict']}")
     return 0
 
 
@@ -298,6 +336,10 @@ def main(argv: list[str] | None = None) -> int:
         sp.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")
         sp.set_defaults(func=func)
     sous.add_parser("lister", help="affiche la grille enregistrée en base").set_defaults(func=cmd_lister)
+    p_cherche = sous.add_parser("chercher-tv", help="cherche une émission dans le guide TV et dit si elle est retenue")
+    p_cherche.add_argument("texte", help="mot ou titre à chercher (majuscules et accents ignorés)")
+    p_cherche.add_argument("--fichier", type=Path, help="guide déjà téléchargé (.xml ou .xml.gz)")
+    p_cherche.set_defaults(func=cmd_chercher_tv)
     p_page = sous.add_parser("page", help="génère la page web (dossier site/) depuis la base")
     p_page.add_argument("--sortie", type=Path, default=page.SORTIE, help="dossier de sortie")
     p_page.set_defaults(func=cmd_page)

@@ -129,14 +129,19 @@ liste_blanche:
     - "Débats parlementaires"
     - "Personnalité politique"
     - "Interviews politiques"
-  # Émissions toujours politiques, quelle que soit la chaîne (titre exact,
-  # sans tenir compte des majuscules et des accents). Liste de départ à compléter.
+  # Émissions toujours politiques. Le titre du guide doit commencer par ce texte
+  # (majuscules, accents, tirets et ponctuation ignorés : « Franc-jeu » = « Franc jeu »).
+  # Forme {titre: "…", chaine: "…"} pour limiter l'émission à une chaîne.
+  # Pour voir le titre exact d'une émission : python3 -m grille chercher-tv "mot"
   emissions:
     - "Questions au gouvernement"
     - "Questions politiques"
     - "Dimanche en politique"
     - "Les Quatre Vérités"
     - "Le Grand Jury"
+    - "Franc-jeu"
+    # Titre trop courant pour toutes les chaînes : limité à la chaîne indiquée.
+    - {titre: "Face à face", chaine: "BFMTV"}
 
 # Filtre 2 : mots-clés. Les noms de candidats, de personnalités et de partis
 # ci-dessus (sauf les partis « ambigu ») s'ajoutent automatiquement à cette liste.
