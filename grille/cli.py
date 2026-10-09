@@ -1,4 +1,4 @@
-"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-youtube|-twitch] | lister."""
+"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-youtube|-twitch] | lister | page | apercu."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import requests
 
-from grille import acces, config, db, tv, twitch, youtube
+from grille import acces, config, db, page, tv, twitch, youtube
 
 JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
@@ -204,6 +204,56 @@ def cmd_collecter(args: argparse.Namespace) -> int:
     return _collecter(args, ["tv", "youtube", "twitch"])
 
 
+def _generer_page(args: argparse.Namespace) -> Path | None:
+    try:
+        conf = config.charger(args.config)
+    except config.ErreurConfig as e:
+        print(f"ERREUR de configuration : {e}")
+        return None
+    connexion = db.ouvrir(args.base)
+    index = page.generer(connexion, conf, datetime.now(tv.PARIS), args.sortie)
+    nb = connexion.execute("SELECT COUNT(*) FROM emissions WHERE statut != 'annulé'").fetchone()[0]
+    connexion.close()
+    print(f"Page générée : {index} ({nb} émissions en base)")
+    return index
+
+
+def cmd_page(args: argparse.Namespace) -> int:
+    return 0 if _generer_page(args) else 1
+
+
+def _adresse_locale() -> str:
+    """Adresse du Mac sur le réseau local (aucun paquet n'est envoyé)."""
+    import socket
+
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        try:
+            s.connect(("192.0.2.1", 80))
+            return s.getsockname()[0]
+        except OSError:
+            return "127.0.0.1"
+
+
+def cmd_apercu(args: argparse.Namespace) -> int:
+    """Génère la page et la sert sur le réseau local, pour l'ouvrir depuis le téléphone."""
+    import functools
+    import http.server
+
+    index = _generer_page(args)
+    if index is None:
+        return 1
+    gestionnaire = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(index.parent))
+    with http.server.ThreadingHTTPServer(("0.0.0.0", args.port), gestionnaire) as serveur:
+        print(f"\nSur ce Mac : http://localhost:{args.port}")
+        print(f"Sur le téléphone (même Wi-Fi) : http://{_adresse_locale()}:{args.port}")
+        print("Ctrl + C pour arrêter.")
+        try:
+            serveur.serve_forever()
+        except KeyboardInterrupt:
+            print("\nAperçu arrêté.")
+    return 0
+
+
 def cmd_lister(args: argparse.Namespace) -> int:
     connexion = db.ouvrir(args.base)
     maintenant, fin = _horizon()
@@ -248,5 +298,12 @@ def main(argv: list[str] | None = None) -> int:
         sp.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")
         sp.set_defaults(func=func)
     sous.add_parser("lister", help="affiche la grille enregistrée en base").set_defaults(func=cmd_lister)
+    p_page = sous.add_parser("page", help="génère la page web (dossier site/) depuis la base")
+    p_page.add_argument("--sortie", type=Path, default=page.SORTIE, help="dossier de sortie")
+    p_page.set_defaults(func=cmd_page)
+    p_apercu = sous.add_parser("apercu", help="génère la page et l'affiche sur le réseau local (téléphone)")
+    p_apercu.add_argument("--sortie", type=Path, default=page.SORTIE, help="dossier de sortie")
+    p_apercu.add_argument("--port", type=int, default=8000)
+    p_apercu.set_defaults(func=cmd_apercu)
     args = parser.parse_args(argv)
     return args.func(args)

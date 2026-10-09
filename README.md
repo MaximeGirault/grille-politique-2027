@@ -20,8 +20,23 @@ python3 -m grille collecter-youtube  # directs YouTube programmés et en cours d
 python3 -m grille collecter-twitch   # chaînes Twitch en direct et plannings publiés
 python3 -m grille collecter       # les trois sources à la suite ; si l'une tombe, les autres continuent
 python3 -m grille lister          # affiche la grille enregistrée (aujourd'hui et les 7 jours suivants)
+python3 -m grille page            # génère la page web dans le dossier site/
+python3 -m grille apercu          # génère la page et l'affiche sur le téléphone (même Wi-Fi)
 python3 -m pytest                 # tests
 ```
+
+## Voir la page sur le téléphone
+
+Avant la mise en ligne (lot 5), le Mac peut servir la page sur le réseau Wi-Fi :
+
+1. `python3 -m grille collecter` pour remplir la base, puis `python3 -m grille apercu`.
+2. La commande affiche une adresse du type `http://192.168.1.20:8000` : l'ouvrir dans
+   Safari sur l'iPhone, connecté au même Wi-Fi. Si macOS demande d'autoriser les
+   connexions entrantes pour Python, accepter.
+3. `Ctrl + C` dans le Terminal pour arrêter.
+
+L'installation sur l'écran d'accueil et le mode hors connexion demandent une adresse
+en HTTPS : ils fonctionneront une fois la page publiée sur GitHub Pages (lot 5).
 
 ## Clés d'API
 
