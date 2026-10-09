@@ -29,8 +29,8 @@ chaines:
 - {plateforme: tv, nom: "CNews", adresse: "CNews.fr", categorie: "Info en continu", direct: "https://www.cnews.fr/le-direct"}
 - {plateforme: tv, nom: "LCI", adresse: "LCI.fr", categorie: "Info en continu", direct: "https://www.tf1.fr/lci/direct"}
 - {plateforme: tv, nom: "franceinfo", adresse: "FranceInfo.fr", categorie: "Info en continu", direct: "https://www.francetvinfo.fr/en-direct/tv.html"}
-# Canal partagé, un seul direct sur france.tv : cette page de lcp.fr y renvoie (vérifié sur iPhone).
-- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire", direct: "https://lcp.fr/la-chaine/regarder-lcp-assemblee-nationale-174335"}
+# Canal partagé, un seul direct sur france.tv (adresse relevée le 9 octobre 2026).
+- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire", direct: "https://www.france.tv/lcp-public-senat/direct.html"}
 
 # Radios filmées (France Inter, franceinfo, RTL, Europe 1, RMC, Sud Radio) :
 # suivies par leurs chaînes YouTube, dans l'annexe « Grands médias » ci-dessous.
