@@ -13,6 +13,7 @@
 #   tv      : identifiant XMLTV du guide xmltvfr.fr (ex. France2.fr)
 #   web     : adresse du flux RSS ou de la page de programmation
 # Champ facultatif « direct » : page pour regarder en direct, ou liste de pages entre crochets.
+# Champ facultatif « logo » : adresse d'une image, à la place du logo fourni par la source.
 
 chaines:
 

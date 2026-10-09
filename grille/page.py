@@ -27,11 +27,16 @@ def donnees(connexion, config: Configuration, maintenant: datetime) -> dict:
     minuit = datetime.combine(maintenant.date(), datetime.min.time(), PARIS)
     emissions = [{k: e[k] for k in CHAMPS} for e in db.lister(connexion, minuit, minuit + timedelta(days=JOURS_AFFICHES))]
     presents = {nom for e in emissions for nom in e["invites"]}
+    chaines = {e["chaine"] for e in emissions}
+    # Logo imposé dans chaines.yaml d'abord, sinon celui fourni par la source.
+    logos = {nom: url for nom, url in db.logos(connexion).items() if nom in chaines}
+    logos.update({c.nom: c.logo for c in config.chaines if c.logo and c.nom in chaines})
     return {
         "genere_le": maintenant.isoformat(timespec="seconds"),
         "jours": [(maintenant.date() + timedelta(days=i)).isoformat() for i in range(JOURS_AFFICHES)],
         # Le filtre « candidat » ne propose que ceux qui apparaissent dans la grille.
         "candidats": sorted((c["nom"] for c in config.candidats if c["nom"] in presents), key=str.casefold),
+        "logos": logos,
         "emissions": emissions,
     }
 

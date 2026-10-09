@@ -41,7 +41,10 @@ def routeur(methode, url, params):
     if ressource == "channels":
         if "forHandle" in params:
             return Reponse(corps=API[f"channels_forHandle_{params['forHandle']}"])
-        return Reponse(corps=API["channels_id"])
+        # Recherche par identifiants : toutes les chaînes connues des réponses enregistrées.
+        connues = [it for cle, rep in API.items() if cle.startswith("channels_") for it in rep.get("items", [])]
+        demandes = params["id"].split(",")
+        return Reponse(corps={**API["channels_id"], "items": [it for it in connues if it["id"] in demandes]})
     if ressource == "playlistItems":
         return Reponse(corps=API[f"playlistItems_{params['playlistId']}"])
     if ressource == "videos":
@@ -124,3 +127,20 @@ def test_quota_epuise_n_annule_rien(conf, connexion):
 def test_sans_cle(conf, connexion, monkeypatch):
     monkeypatch.delenv("YOUTUBE_API_KEY", raising=False)
     assert "YOUTUBE_API_KEY" in youtube.collecter(conf, Session(routeur), connexion, MAINTENANT).interrompu
+
+
+def test_logos_memorises(conf, connexion):
+    youtube.collecter(conf, Session(routeur), connexion, MAINTENANT, cle_api="cle")
+    logos = db.logos(connexion)
+    assert logos["Hugo au Perchoir"] == "https://yt3.ggpht.com/perchoir=s88-c-k-c0x00ffffff-no-rj"
+    assert set(logos) == {"Hugo au Perchoir", "Clément Viktorovitch", "La France insoumise"}
+
+
+def test_logo_rattrape_pour_les_chaines_deja_connues(conf, connexion):
+    youtube.collecter(conf, Session(routeur), connexion, MAINTENANT, cle_api="cle")
+    connexion.execute("DELETE FROM logos")  # base d'avant les logos
+    session = Session(routeur)
+    youtube.collecter(conf, session, connexion, MAINTENANT, cle_api="cle")
+    appels_logos = [p for _, url, p in session.appels if url.endswith("/channels") and p.get("part") == "snippet"]
+    assert len(appels_logos) == 1  # un seul appel pour toutes les chaînes
+    assert "Hugo au Perchoir" in db.logos(connexion)

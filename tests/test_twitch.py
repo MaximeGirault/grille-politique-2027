@@ -107,3 +107,8 @@ def test_sans_identifiants(conf, connexion, monkeypatch):
     monkeypatch.delenv("TWITCH_CLIENT_SECRET", raising=False)
     rapport = twitch.collecter(conf, Session(routeur()), connexion, MAINTENANT)
     assert "TWITCH_CLIENT_ID" in rapport.interrompu
+
+
+def test_logos_twitch(conf, connexion):
+    _collecter(conf, connexion, Session(routeur()))
+    assert db.logos(connexion)["BackSeat (Jean Massiet)"].endswith("jeanmassiet-profile_image-300x300.png")

@@ -1,72 +1,282 @@
 {
   "_avertissement": "Réponses RECONSTITUÉES d'après la documentation de l'API YouTube Data v3 (aucune clé disponible au lot 3). À remplacer par de vraies réponses, clé retirée.",
   "channels_forHandle_HugoauPerchoir": {
-    "kind": "youtube#channelListResponse", "etag": "e1",
-    "pageInfo": {"totalResults": 1, "resultsPerPage": 5},
-    "items": [{"kind": "youtube#channel", "etag": "e2", "id": "UCperchoir0000000000000",
-               "contentDetails": {"relatedPlaylists": {"likes": "", "uploads": "UUperchoir0000000000000"}}}]
+    "kind": "youtube#channelListResponse",
+    "etag": "e1",
+    "pageInfo": {
+      "totalResults": 1,
+      "resultsPerPage": 5
+    },
+    "items": [
+      {
+        "kind": "youtube#channel",
+        "etag": "e2",
+        "id": "UCperchoir0000000000000",
+        "contentDetails": {
+          "relatedPlaylists": {
+            "likes": "",
+            "uploads": "UUperchoir0000000000000"
+          }
+        },
+        "snippet": {
+          "title": "perchoir",
+          "thumbnails": {
+            "default": {
+              "url": "https://yt3.ggpht.com/perchoir=s88-c-k-c0x00ffffff-no-rj",
+              "width": 88,
+              "height": 88
+            },
+            "medium": {
+              "url": "https://yt3.ggpht.com/perchoir=s240-c-k-c0x00ffffff-no-rj",
+              "width": 240,
+              "height": 240
+            }
+          }
+        }
+      }
+    ]
   },
   "channels_forHandle_Clemovitch": {
-    "kind": "youtube#channelListResponse", "etag": "e3",
-    "pageInfo": {"totalResults": 1, "resultsPerPage": 5},
-    "items": [{"kind": "youtube#channel", "etag": "e4", "id": "UCclemovitch00000000000",
-               "contentDetails": {"relatedPlaylists": {"likes": "", "uploads": "UUclemovitch00000000000"}}}]
+    "kind": "youtube#channelListResponse",
+    "etag": "e3",
+    "pageInfo": {
+      "totalResults": 1,
+      "resultsPerPage": 5
+    },
+    "items": [
+      {
+        "kind": "youtube#channel",
+        "etag": "e4",
+        "id": "UCclemovitch00000000000",
+        "contentDetails": {
+          "relatedPlaylists": {
+            "likes": "",
+            "uploads": "UUclemovitch00000000000"
+          }
+        },
+        "snippet": {
+          "title": "clemovitch",
+          "thumbnails": {
+            "default": {
+              "url": "https://yt3.ggpht.com/clemovitch=s88-c-k-c0x00ffffff-no-rj",
+              "width": 88,
+              "height": 88
+            },
+            "medium": {
+              "url": "https://yt3.ggpht.com/clemovitch=s240-c-k-c0x00ffffff-no-rj",
+              "width": 240,
+              "height": 240
+            }
+          }
+        }
+      }
+    ]
   },
   "channels_forHandle_brutofficiel": {
-    "kind": "youtube#channelListResponse", "etag": "e5",
-    "pageInfo": {"totalResults": 0, "resultsPerPage": 5}
+    "kind": "youtube#channelListResponse",
+    "etag": "e5",
+    "pageInfo": {
+      "totalResults": 0,
+      "resultsPerPage": 5
+    }
   },
   "channels_id": {
-    "kind": "youtube#channelListResponse", "etag": "e6",
-    "pageInfo": {"totalResults": 1, "resultsPerPage": 5},
-    "items": [{"kind": "youtube#channel", "etag": "e7", "id": "UCKHKSD-yanY2ZwwU_4Tgf0w",
-               "contentDetails": {"relatedPlaylists": {"likes": "", "uploads": "UUKHKSD-yanY2ZwwU_4Tgf0w"}}}]
+    "kind": "youtube#channelListResponse",
+    "etag": "e6",
+    "pageInfo": {
+      "totalResults": 1,
+      "resultsPerPage": 5
+    },
+    "items": [
+      {
+        "kind": "youtube#channel",
+        "etag": "e7",
+        "id": "UCKHKSD-yanY2ZwwU_4Tgf0w",
+        "contentDetails": {
+          "relatedPlaylists": {
+            "likes": "",
+            "uploads": "UUKHKSD-yanY2ZwwU_4Tgf0w"
+          }
+        },
+        "snippet": {
+          "title": "lfi",
+          "thumbnails": {
+            "default": {
+              "url": "https://yt3.ggpht.com/lfi=s88-c-k-c0x00ffffff-no-rj",
+              "width": 88,
+              "height": 88
+            },
+            "medium": {
+              "url": "https://yt3.ggpht.com/lfi=s240-c-k-c0x00ffffff-no-rj",
+              "width": 240,
+              "height": 240
+            }
+          }
+        }
+      }
+    ]
   },
   "playlistItems_UUperchoir0000000000000": {
-    "kind": "youtube#playlistItemListResponse", "etag": "p1",
+    "kind": "youtube#playlistItemListResponse",
+    "etag": "p1",
     "items": [
-      {"kind": "youtube#playlistItem", "id": "pi1", "contentDetails": {"videoId": "direct_perchoir", "videoPublishedAt": "2027-03-27T08:00:00Z"}},
-      {"kind": "youtube#playlistItem", "id": "pi2", "contentDetails": {"videoId": "video_ordinaire", "videoPublishedAt": "2027-03-26T08:00:00Z"}}
+      {
+        "kind": "youtube#playlistItem",
+        "id": "pi1",
+        "contentDetails": {
+          "videoId": "direct_perchoir",
+          "videoPublishedAt": "2027-03-27T08:00:00Z"
+        }
+      },
+      {
+        "kind": "youtube#playlistItem",
+        "id": "pi2",
+        "contentDetails": {
+          "videoId": "video_ordinaire",
+          "videoPublishedAt": "2027-03-26T08:00:00Z"
+        }
+      }
     ],
-    "pageInfo": {"totalResults": 2, "resultsPerPage": 15}
+    "pageInfo": {
+      "totalResults": 2,
+      "resultsPerPage": 15
+    }
   },
   "playlistItems_UUclemovitch00000000000": {
-    "kind": "youtube#playlistItemListResponse", "etag": "p2",
+    "kind": "youtube#playlistItemListResponse",
+    "etag": "p2",
     "items": [
-      {"kind": "youtube#playlistItem", "id": "pi3", "contentDetails": {"videoId": "annonce_heure_ete"}},
-      {"kind": "youtube#playlistItem", "id": "pi4", "contentDetails": {"videoId": "annonce_non_politique"}}
+      {
+        "kind": "youtube#playlistItem",
+        "id": "pi3",
+        "contentDetails": {
+          "videoId": "annonce_heure_ete"
+        }
+      },
+      {
+        "kind": "youtube#playlistItem",
+        "id": "pi4",
+        "contentDetails": {
+          "videoId": "annonce_non_politique"
+        }
+      }
     ],
-    "pageInfo": {"totalResults": 2, "resultsPerPage": 15}
+    "pageInfo": {
+      "totalResults": 2,
+      "resultsPerPage": 15
+    }
   },
   "playlistItems_UUKHKSD-yanY2ZwwU_4Tgf0w": {
-    "kind": "youtube#playlistItemListResponse", "etag": "p3",
+    "kind": "youtube#playlistItemListResponse",
+    "etag": "p3",
     "items": [
-      {"kind": "youtube#playlistItem", "id": "pi5", "contentDetails": {"videoId": "annonce_abandonnee"}},
-      {"kind": "youtube#playlistItem", "id": "pi6", "contentDetails": {"videoId": "meeting_termine"}}
+      {
+        "kind": "youtube#playlistItem",
+        "id": "pi5",
+        "contentDetails": {
+          "videoId": "annonce_abandonnee"
+        }
+      },
+      {
+        "kind": "youtube#playlistItem",
+        "id": "pi6",
+        "contentDetails": {
+          "videoId": "meeting_termine"
+        }
+      }
     ],
-    "pageInfo": {"totalResults": 2, "resultsPerPage": 15}
+    "pageInfo": {
+      "totalResults": 2,
+      "resultsPerPage": 15
+    }
   },
   "videos": {
-    "kind": "youtube#videoListResponse", "etag": "v0",
+    "kind": "youtube#videoListResponse",
+    "etag": "v0",
     "items": [
-      {"kind": "youtube#video", "id": "direct_perchoir",
-       "snippet": {"channelId": "UCperchoir0000000000000", "title": "Hugo reçoit un invité", "description": "", "liveBroadcastContent": "live"},
-       "liveStreamingDetails": {"actualStartTime": "2027-03-27T08:30:00Z", "scheduledStartTime": "2027-03-27T08:30:00Z", "concurrentViewers": "1234"}},
-      {"kind": "youtube#video", "id": "video_ordinaire",
-       "snippet": {"channelId": "UCperchoir0000000000000", "title": "Le best-of de la semaine", "description": "", "liveBroadcastContent": "none"}},
-      {"kind": "youtube#video", "id": "annonce_heure_ete",
-       "snippet": {"channelId": "UCclemovitch00000000000", "title": "Analyse en direct du débat de la présidentielle", "description": "Avec Raphaël Glucksmann.", "liveBroadcastContent": "upcoming"},
-       "liveStreamingDetails": {"scheduledStartTime": "2027-03-28T18:00:00Z"}},
-      {"kind": "youtube#video", "id": "annonce_non_politique",
-       "snippet": {"channelId": "UCclemovitch00000000000", "title": "Questions des abonnés", "description": "On parle de tout.", "liveBroadcastContent": "upcoming"},
-       "liveStreamingDetails": {"scheduledStartTime": "2027-03-29T18:00:00Z"}},
-      {"kind": "youtube#video", "id": "annonce_abandonnee",
-       "snippet": {"channelId": "UCKHKSD-yanY2ZwwU_4Tgf0w", "title": "Meeting à Lille", "description": "", "liveBroadcastContent": "upcoming"},
-       "liveStreamingDetails": {"scheduledStartTime": "2027-03-01T18:00:00Z"}},
-      {"kind": "youtube#video", "id": "meeting_termine",
-       "snippet": {"channelId": "UCKHKSD-yanY2ZwwU_4Tgf0w", "title": "Meeting de Marseille", "description": "", "liveBroadcastContent": "none"},
-       "liveStreamingDetails": {"scheduledStartTime": "2027-03-27T06:00:00Z", "actualStartTime": "2027-03-27T06:05:00Z", "actualEndTime": "2027-03-27T07:30:00Z"}}
+      {
+        "kind": "youtube#video",
+        "id": "direct_perchoir",
+        "snippet": {
+          "channelId": "UCperchoir0000000000000",
+          "title": "Hugo reçoit un invité",
+          "description": "",
+          "liveBroadcastContent": "live"
+        },
+        "liveStreamingDetails": {
+          "actualStartTime": "2027-03-27T08:30:00Z",
+          "scheduledStartTime": "2027-03-27T08:30:00Z",
+          "concurrentViewers": "1234"
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "video_ordinaire",
+        "snippet": {
+          "channelId": "UCperchoir0000000000000",
+          "title": "Le best-of de la semaine",
+          "description": "",
+          "liveBroadcastContent": "none"
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "annonce_heure_ete",
+        "snippet": {
+          "channelId": "UCclemovitch00000000000",
+          "title": "Analyse en direct du débat de la présidentielle",
+          "description": "Avec Raphaël Glucksmann.",
+          "liveBroadcastContent": "upcoming"
+        },
+        "liveStreamingDetails": {
+          "scheduledStartTime": "2027-03-28T18:00:00Z"
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "annonce_non_politique",
+        "snippet": {
+          "channelId": "UCclemovitch00000000000",
+          "title": "Questions des abonnés",
+          "description": "On parle de tout.",
+          "liveBroadcastContent": "upcoming"
+        },
+        "liveStreamingDetails": {
+          "scheduledStartTime": "2027-03-29T18:00:00Z"
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "annonce_abandonnee",
+        "snippet": {
+          "channelId": "UCKHKSD-yanY2ZwwU_4Tgf0w",
+          "title": "Meeting à Lille",
+          "description": "",
+          "liveBroadcastContent": "upcoming"
+        },
+        "liveStreamingDetails": {
+          "scheduledStartTime": "2027-03-01T18:00:00Z"
+        }
+      },
+      {
+        "kind": "youtube#video",
+        "id": "meeting_termine",
+        "snippet": {
+          "channelId": "UCKHKSD-yanY2ZwwU_4Tgf0w",
+          "title": "Meeting de Marseille",
+          "description": "",
+          "liveBroadcastContent": "none"
+        },
+        "liveStreamingDetails": {
+          "scheduledStartTime": "2027-03-27T06:00:00Z",
+          "actualStartTime": "2027-03-27T06:05:00Z",
+          "actualEndTime": "2027-03-27T07:30:00Z"
+        }
+      }
     ],
-    "pageInfo": {"totalResults": 6, "resultsPerPage": 6}
+    "pageInfo": {
+      "totalResults": 6,
+      "resultsPerPage": 6
+    }
   }
 }

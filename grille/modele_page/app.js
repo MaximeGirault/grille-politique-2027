@@ -15,6 +15,7 @@ const etat = {
   categories: new Set(CATEGORIES),
   plateformes: new Set(Object.keys(PLATEFORMES)),
   candidat: "",
+  chaine: "", // touché sur un logo : n'afficher que cette chaîne (non mémorisé)
 };
 
 function lireStockage() {
@@ -54,7 +55,36 @@ function termine(e, maintenant) {
 
 function visible(e) {
   return etat.categories.has(e.categorie) && etat.plateformes.has(e.plateforme)
-    && (!etat.candidat || e.invites.includes(etat.candidat));
+    && (!etat.candidat || e.invites.includes(etat.candidat))
+    && (!etat.chaine || e.chaine === etat.chaine);
+}
+
+function initiales(nom) {
+  const mots = nom.replace(/\(.*?\)/g, "").split(/[\s\/·-]+/).filter(Boolean);
+  return (mots.length > 1 ? mots[0][0] + mots[1][0] : nom.slice(0, 2)).toUpperCase();
+}
+
+function logo(chaine, cliquable) {
+  const url = DONNEES.logos[chaine];
+  const n = el(cliquable ? "button" : "span", { classe: "logo", title: chaine });
+  if (cliquable) {
+    n.type = "button";
+    n.setAttribute("aria-label", "Afficher seulement " + chaine);
+    n.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      etat.chaine = etat.chaine === chaine ? "" : chaine;
+      afficher();
+      window.scrollTo({ top: 0 });
+    });
+  }
+  if (url) {
+    const img = el("img", { src: url, alt: "", loading: "lazy", referrerpolicy: "no-referrer" });
+    img.addEventListener("error", () => { img.remove(); n.textContent = initiales(chaine); });
+    n.append(img);
+  } else {
+    n.textContent = initiales(chaine);
+  }
+  return n;
 }
 
 function el(balise, attributs = {}, ...enfants) {
@@ -87,6 +117,7 @@ function carte(e, maintenant) {
   const fini = !direct && termine(e, maintenant);
   const horaire = e.debut.slice(11, 16) + (e.fin && e.fin.slice(0, 10) === e.debut.slice(0, 10) ? "–" + e.fin.slice(11, 16) : "");
   const haut = el("div", { classe: "ligne-haut" },
+    logo(e.chaine, true),
     el("span", { classe: "horaire", texte: horaire }),
     direct ? el("span", { classe: "badge-direct", texte: "En direct" }) : null,
     el("span", { classe: "chaine", texte: e.chaine }),
@@ -165,6 +196,17 @@ function afficherFraicheur() {
   p.classList.toggle("alerte", age > 3 || !navigator.onLine);
 }
 
+function afficherFiltreChaine() {
+  const p = document.getElementById("filtre-chaine");
+  p.replaceChildren();
+  p.hidden = !etat.chaine;
+  if (!etat.chaine) return;
+  const bouton = el("button", { classe: "etiquette-chaine", type: "button", "aria-label": "Revenir à toutes les chaînes" },
+    logo(etat.chaine, false), el("span", { texte: etat.chaine + "  ✕" }));
+  bouton.addEventListener("click", () => { etat.chaine = ""; afficher(); });
+  p.append(bouton);
+}
+
 function afficherFiltres() {
   const bouton = document.getElementById("bouton-filtres");
   const actif = etat.categories.size < CATEGORIES.length || etat.plateformes.size < Object.keys(PLATEFORMES).length || !!etat.candidat;
@@ -182,6 +224,7 @@ function afficher() {
   if (!DONNEES.jours.includes(etat.jour)) etat.jour = DONNEES.jours.includes(aujourdhui) ? aujourdhui : DONNEES.jours[0];
   afficherFraicheur();
   afficherFiltres();
+  afficherFiltreChaine();
   afficherJours(aujourdhui);
   afficherGrille(aujourdhui);
 }
@@ -212,6 +255,7 @@ function preparerFiltres() {
     CATEGORIES.forEach((c) => etat.categories.add(c));
     Object.keys(PLATEFORMES).forEach((p) => etat.plateformes.add(p));
     etat.candidat = "";
+    etat.chaine = "";
     ecrireStockage();
     afficher();
   });

@@ -8,8 +8,21 @@ self.addEventListener("install", (ev) => {
 
 self.addEventListener("activate", (ev) => ev.waitUntil(self.clients.claim()));
 
+const LOGOS = "grille-2027-logos";
+
 self.addEventListener("fetch", (ev) => {
-  if (ev.request.method !== "GET" || new URL(ev.request.url).origin !== location.origin) return;
+  if (ev.request.method !== "GET") return;
+  if (new URL(ev.request.url).origin !== location.origin) {
+    // Logos des chaînes (YouTube, Twitch, guide TV) : cache d'abord, ils changent rarement.
+    if (ev.request.destination !== "image") return;
+    ev.respondWith(
+      caches.open(LOGOS).then((c) => c.match(ev.request).then((r) => r || fetch(ev.request).then((reponse) => {
+        c.put(ev.request, reponse.clone());
+        return reponse;
+      })))
+    );
+    return;
+  }
   ev.respondWith(
     fetch(ev.request)
       .then((reponse) => {

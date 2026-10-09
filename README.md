@@ -117,6 +117,14 @@ La base est conservée sur la branche `donnees`, qui ne garde que la dernière v
 Ouvrir `config/chaines.yaml` sur GitHub, cliquer sur le crayon, copier une ligne,
 l'adapter, puis « Commit changes ».
 
+## Logos des chaînes
+
+Chaque émission affiche le logo de sa chaîne ; le toucher n'affiche plus que cette
+chaîne (✕ pour revenir à tout). Les logos viennent des sources : vignette YouTube,
+image de profil Twitch, balise `<icon>` du guide TV. Sans logo, la page affiche les
+initiales. Pour imposer un logo, ajouter `logo: "https://…"` à la ligne de la chaîne
+dans `config/chaines.yaml`.
+
 ## Régler le filtre politique
 
 Tout se passe dans `config/politique.yaml`. Si une émission sans rapport apparaît,

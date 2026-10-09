@@ -65,19 +65,23 @@ def _resoudre(client: ClientYouTube, chaines: list[Chaine], connexion, rapport: 
     connues = {a: (i, p) for a, i, p in connexion.execute("SELECT adresse, identifiant, playlist FROM chaines_resolues")}
     maintenant = datetime.now(PARIS).isoformat(timespec="seconds")
 
+    logos_connus = db.logos(connexion, avec_vides=True)
+    nouveaux_logos: dict[str, str] = {}
+
     def memoriser(chaine: Chaine, item: dict) -> None:
         resolution = (item["id"], item["contentDetails"]["relatedPlaylists"]["uploads"])
         connues[chaine.adresse] = resolution
         connexion.execute(
             "INSERT OR REPLACE INTO chaines_resolues VALUES (?, ?, ?, ?)", (chaine.adresse, *resolution, maintenant)
         )
+        nouveaux_logos[chaine.nom] = _logo(item)
 
     a_resoudre = [c for c in chaines if c.adresse not in connues]
     # Identifiants UC… déjà connus : un seul appel pour 50 chaînes.
     par_id = [c for c in a_resoudre if "channel_id" in c.cle]
     for i in range(0, len(par_id), 50):
         lot = par_id[i:i + 50]
-        items = client.appeler("channels", part="contentDetails", id=",".join(c.cle["channel_id"] for c in lot))
+        items = client.appeler("channels", part="snippet,contentDetails", id=",".join(c.cle["channel_id"] for c in lot))
         trouves = {it["id"]: it for it in items.get("items") or []}
         for c in lot:
             if c.cle["channel_id"] in trouves:
@@ -88,11 +92,22 @@ def _resoudre(client: ClientYouTube, chaines: list[Chaine], connexion, rapport: 
         if c.adresse in connues or "channel_id" in c.cle:
             continue
         if "user" in c.cle:
-            items = client.appeler("channels", part="contentDetails", forUsername=c.cle["user"])
+            items = client.appeler("channels", part="snippet,contentDetails", forUsername=c.cle["user"])
         else:
-            items = client.appeler("channels", part="contentDetails", forHandle=c.cle.get("handle") or c.cle["custom"])
+            items = client.appeler("channels", part="snippet,contentDetails",
+                                   forHandle=c.cle.get("handle") or c.cle["custom"])
         if items.get("items"):
             memoriser(c, items["items"][0])
+    # Chaînes résolues avant l'arrivée des logos : un appel pour 50 chaînes, une seule fois.
+    sans_logo = [c for c in chaines if c.adresse in connues and c.nom not in logos_connus and c.nom not in nouveaux_logos]
+    for i in range(0, len(sans_logo), 50):
+        lot = sans_logo[i:i + 50]
+        items = client.appeler("channels", part="snippet", id=",".join(connues[c.adresse][0] for c in lot))
+        par_id = {it["id"]: it for it in items.get("items") or []}
+        for c in lot:
+            if connues[c.adresse][0] in par_id:
+                nouveaux_logos[c.nom] = _logo(par_id[connues[c.adresse][0]])
+    db.noter_logos(connexion, nouveaux_logos, datetime.now(PARIS))
     connexion.commit()
 
     for c in chaines:
@@ -102,6 +117,15 @@ def _resoudre(client: ClientYouTube, chaines: list[Chaine], connexion, rapport: 
         if c.a_confirmer:
             rapport.a_confirmer[c.nom] = c.adresse in connues
     return connues
+
+
+def _logo(item: dict) -> str:
+    """Plus petite vignette de la chaîne (88 px), suffisante pour un logo."""
+    vignettes = (item.get("snippet") or {}).get("thumbnails") or {}
+    for taille in ("default", "medium", "high"):
+        if vignettes.get(taille, {}).get("url"):
+            return vignettes[taille]["url"]
+    return ""
 
 
 def _date(valeur: str | None) -> datetime | None:

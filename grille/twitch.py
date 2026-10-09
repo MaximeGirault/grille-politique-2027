@@ -76,7 +76,10 @@ def collecter(config: Configuration, session: requests.Session, connexion, maint
         for lot in _par_lots(list(chaines)):
             r = appeler("users", [("login", login) for login in lot])
             r.raise_for_status()
-            identifiants.update({u["login"].lower(): u["id"] for u in r.json().get("data") or []})
+            utilisateurs = r.json().get("data") or []
+            identifiants.update({u["login"].lower(): u["id"] for u in utilisateurs})
+            db.noter_logos(connexion, {chaines[u["login"].lower()].nom: u.get("profile_image_url", "")
+                                       for u in utilisateurs if u["login"].lower() in chaines}, maintenant)
         for login, c in chaines.items():
             if login not in identifiants:
                 rapport.anomalies.append(f"chaîne Twitch introuvable : {c.nom} ({c.adresse})")

@@ -38,6 +38,8 @@ class Chaine:
     a_confirmer: bool = False
     # Adresses pour regarder le direct (facultatives, utiles surtout pour la télévision).
     direct: tuple[str, ...] = ()
+    # Logo imposé dans chaines.yaml (sinon celui fourni par la source).
+    logo: str = ""
     # Identifiant extrait de l'adresse : handle ou ID YouTube, login Twitch, ID XMLTV…
     cle: dict = field(default_factory=dict, hash=False, compare=False)
 
@@ -129,10 +131,15 @@ def _lire_chaines(brut: object, anomalies: list[str]) -> list[Chaine]:
             else:
                 anomalies.append(f"{etiquette} : adresse de direct invalide « {d} », ignorée")
         direct = tuple(direct)
+        logo = str(ligne.get("logo") or "").strip()
+        if logo and not _WEB.match(logo):
+            anomalies.append(f"{etiquette} : adresse de logo invalide « {logo} », ignorée")
+            logo = ""
         vues.add((plateforme, adresse.lower()))
         chaines.append(
             Chaine(
-                plateforme, nom, adresse, str(ligne["categorie"]).strip(), bool(ligne.get("a_confirmer")), direct, cle
+                plateforme, nom, adresse, str(ligne["categorie"]).strip(), bool(ligne.get("a_confirmer")), direct,
+                logo, cle
             )
         )
     return chaines
