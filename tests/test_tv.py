@@ -96,3 +96,13 @@ def test_guide_non_compresse_accepte(conf, connexion, tmp_path):
     chemin = tmp_path / "guide.xml"
     shutil.copy(EXTRAIT, chemin)
     assert len(tv.collecter(conf, chemin, connexion, MAINTENANT).retenues) == 6
+
+
+def test_programmes_de_nuit_masques(conf, connexion, tmp_path):
+    nuit = EXTRAIT.read_text(encoding="utf-8").replace(
+        '<programme start="20270316074000 +0100" stop="20270316080000 +0100" channel="France2.fr">',
+        '<programme start="20270316020000 +0100" stop="20270316030000 +0100" channel="France2.fr">',
+    )
+    rapport = tv.collecter(conf, _gz(tmp_path, nuit.encode("utf-8")), connexion, MAINTENANT)
+    assert "tv:France2.fr:202703160200" not in {e["id"] for e in rapport.retenues}
+    assert rapport.masques >= 1

@@ -51,6 +51,7 @@ class Configuration:
     liste_blanche: dict
     mots_cles: list[str]
     mots_cles_titre: list[str] = field(default_factory=list)
+    tv_heures_masquees: tuple[int, int] | None = None  # (de, a) : début dans [de, a[ → ignoré
     anomalies: list[str] = field(default_factory=list)
 
     def noms_a_reperer(self) -> list[str]:
@@ -151,6 +152,14 @@ def charger(dossier: Path = DOSSIER_CONFIG) -> Configuration:
     for rubrique, liste in (("mots_cles", mots_cles), ("mots_cles_titre", mots_cles_titre)):
         if not isinstance(liste, list) or not all(isinstance(m, str) for m in liste):
             raise ErreurConfig(f"politique.yaml : « {rubrique}: » doit être une liste de textes")
+    masque = politique.get("tv_heures_masquees")
+    if masque is not None:
+        try:
+            masque = (int(masque["de"]), int(masque["a"]))
+        except (TypeError, KeyError, ValueError) as e:
+            raise ErreurConfig("politique.yaml : « tv_heures_masquees: » doit s'écrire {de: 1, a: 6}") from e
+        if not (0 <= masque[0] < masque[1] <= 24):
+            raise ErreurConfig("politique.yaml : « tv_heures_masquees: » doit aller d'une heure à une heure plus tardive, entre 0 et 24")
     liste_blanche = politique.get("liste_blanche") or {}
     if not isinstance(liste_blanche, dict):
         raise ErreurConfig("politique.yaml : « liste_blanche: » doit contenir des rubriques")
@@ -168,5 +177,6 @@ def charger(dossier: Path = DOSSIER_CONFIG) -> Configuration:
         liste_blanche=liste_blanche,
         mots_cles=mots_cles,
         mots_cles_titre=mots_cles_titre,
+        tv_heures_masquees=masque,
         anomalies=anomalies,
     )

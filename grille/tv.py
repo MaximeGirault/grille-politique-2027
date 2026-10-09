@@ -43,6 +43,7 @@ class Programme:
 class Rapport:
     lus: int = 0
     dans_l_horizon: int = 0
+    masques: int = 0  # programmes de nuit ignorés (tv_heures_masquees)
     retenues: list[dict] = field(default_factory=list)
     annulees: int = 0
     chaines_absentes: list[str] = field(default_factory=list)
@@ -131,6 +132,9 @@ def collecter(config: Configuration, chemin: Path, connexion, maintenant: dateti
         for p in programmes:
             rapport.lus += 1
             if p.debut >= fin_horizon or (p.fin or p.debut) <= maintenant:
+                continue
+            if config.tv_heures_masquees and config.tv_heures_masquees[0] <= p.debut.hour < config.tv_heures_masquees[1]:
+                rapport.masques += 1
                 continue
             rapport.dans_l_horizon += 1
             chaine = chaines_tv[p.chaine_xmltv]

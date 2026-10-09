@@ -96,7 +96,7 @@ chaines:
 - {plateforme: youtube, nom: "Le Parisien", adresse: "https://www.youtube.com/@leparisien", categorie: "Presse, généraliste"}
 - {plateforme: youtube, nom: "Ouest-France", adresse: "https://www.youtube.com/@ouestfrance", categorie: "Presse régionale, généraliste"}
 - {plateforme: youtube, nom: "Konbini", adresse: "https://www.youtube.com/@konbini", categorie: "Média jeune, interviews ponctuelles"}
-- {plateforme: youtube, nom: "Brut", adresse: "https://www.youtube.com/c/brutofficiel", categorie: "Média jeune, interviews ponctuelles", a_confirmer: true}
+- {plateforme: youtube, nom: "Brut", adresse: "https://www.youtube.com/@BrutFR", categorie: "Média jeune, interviews ponctuelles"}
 - {plateforme: youtube, nom: "Valeurs actuelles", adresse: "https://www.youtube.com/user/valeursactuelles", categorie: "Presse, droite"}
 
 # --- Annexe : Médias du Web, émissions et cercles de réflexion ---
@@ -121,7 +121,7 @@ chaines:
 - {plateforme: youtube, nom: "Contrepoints", adresse: "https://www.youtube.com/@Contrepoints", categorie: "Libéral"}
 - {plateforme: youtube, nom: "Tatiana Ventôse", adresse: "https://www.youtube.com/@TatianaventoseTV", categorie: "Créatrice, souverainiste"}
 - {plateforme: youtube, nom: "Fondapol", adresse: "https://www.youtube.com/@Fondapol", categorie: "Cercle de réflexion, libéral"}
-- {plateforme: youtube, nom: "Fondation Jean-Jaurès", adresse: "https://www.youtube.com/c/fondationjeanjaures", categorie: "Cercle de réflexion, social-démocrate"}
+- {plateforme: youtube, nom: "Fondation Jean-Jaurès", adresse: "https://www.youtube.com/@FondationJean-Jaurès", categorie: "Cercle de réflexion, social-démocrate"}
 - {plateforme: youtube, nom: "Institut Montaigne", adresse: "https://www.youtube.com/user/institutmontaigne", categorie: "Cercle de réflexion, libéral"}
 - {plateforme: youtube, nom: "Terra Nova", adresse: "https://www.youtube.com/channel/UC_61p_l9h4q24BTs-CCotjg", categorie: "Cercle de réflexion, centre gauche"}
 - {plateforme: youtube, nom: "Mardis du Grand Continent", adresse: "https://www.youtube.com/c/mardisgrandcontinent", categorie: "Revue, pro-européen"}
@@ -136,7 +136,8 @@ chaines:
 - {plateforme: youtube, nom: "NPA - L'Anticapitaliste", adresse: "https://www.youtube.com/@NPALAnticapitaliste", categorie: "Parti, extrême gauche"}
 - {plateforme: youtube, nom: "Lutte ouvrière", adresse: "https://www.youtube.com/@LutteOuvriere", categorie: "Parti, extrême gauche"}
 - {plateforme: youtube, nom: "Révolution Permanente", adresse: "https://www.youtube.com/channel/UCwLLr_Fo9dpdJ9UHq4A7PjA", categorie: "Organisation, extrême gauche"}
-- {plateforme: youtube, nom: "Debout la France", adresse: "https://www.youtube.com/c/DEBOUTLAFRANCE", categorie: "Parti, souverainiste"}
+# Pas de chaîne active pour le parti : celle de son président, Nicolas Dupont-Aignan.
+- {plateforme: youtube, nom: "Debout la France (Nicolas Dupont-Aignan)", adresse: "https://www.youtube.com/@dupontaignannicolas", categorie: "Parti, souverainiste"}
 - {plateforme: youtube, nom: "Les Patriotes", adresse: "https://www.youtube.com/@LesPatriotes", categorie: "Parti, souverainiste"}
 - {plateforme: youtube, nom: "UPR", adresse: "https://www.youtube.com/user/UPRdiffusion", categorie: "Parti, souverainiste"}
 
