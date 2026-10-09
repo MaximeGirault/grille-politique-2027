@@ -202,9 +202,14 @@ Décisions (mises à jour le 8 octobre 2026) :
 - [x] Accepter que la page soit publique sur GitHub, sans mot de passe : accepté. La page demandera aux moteurs de recherche de ne pas l'indexer, et son adresse ne sera diffusée à personne. En cas de gêne, repli vers la Freebox.
 - [ ] Accepter ou non le classement des cas ambigus par l'API Claude, qui a un coût à l'usage : accord de principe, décision finale au lot 6, selon le nombre de cas que les deux premiers filtres laissent passer. Modèle envisagé : Claude Haiku 5.5, le moins cher (de l'ordre de quelques centimes par jour), avec un plafond de dépenses de 5 $ fixé dans la console. Prérequis : un compte sur console.anthropic.com avec du crédit prépayé (l'abonnement Claude ne couvre pas l'API) et une clé dans le secret `ANTHROPIC_API_KEY`.
 
-À décider au lot 5 :
+Décidé au lot 5 :
 
-- [ ] Comment conserver la base : l'enregistrer dans le dépôt après chaque collecte, soit environ 24 fois par jour, ferait grossir l'historique Git. Piste : une branche dédiée aux données qui ne garde que la dernière version.
+- [x] Conserver la base sur une branche `donnees` qui ne garde que la dernière version, remplacée à chaque collecte : l'historique du dépôt ne grossit pas.
+- [x] Email envoyé par le serveur SMTP d'iCloud, avec un mot de passe d'application révocable à tout moment.
+
+Ajouté après le lot 5 :
+
+- [ ] Radios : collecteur Radio France (API officielle), puis les autres stations susceptibles de diffuser des débats politiques.
 
 ---
 

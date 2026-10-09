@@ -61,6 +61,57 @@ GitHub.
 
 Vérification : `python3 -m grille verifier-acces` doit afficher trois `ok`.
 
+## Mise en ligne (GitHub)
+
+Deux tâches tournent toutes seules sur GitHub (onglet **Actions** du dépôt) :
+
+- **Collecte horaire**, chaque heure vers :17 : télévision, YouTube, Twitch, puis
+  publication de la page sur `https://maximegirault.github.io/grille-politique-2027/`.
+- **Email du matin**, à 7 h (heure de Paris) : grille du jour, temps forts des 3 jours
+  suivants, état des sources.
+
+La base est conservée sur la branche `donnees`, qui ne garde que la dernière version.
+
+### Réglages à faire une fois
+
+1. **Publication de la page** : Settings → Pages → *Build and deployment* → Source :
+   **GitHub Actions**.
+2. **Secrets** : Settings → Secrets and variables → Actions → *New repository secret*,
+   un par ligne :
+
+   | Nom | Valeur |
+   | --- | --- |
+   | `YOUTUBE_API_KEY` | la clé YouTube (comme dans `.env`) |
+   | `TWITCH_CLIENT_ID` | l'identifiant client Twitch |
+   | `TWITCH_CLIENT_SECRET` | le secret Twitch |
+   | `SMTP_SERVEUR` | `smtp.mail.me.com` |
+   | `SMTP_UTILISATEUR` | ton adresse iCloud complète (…@me.com) |
+   | `SMTP_MOT_DE_PASSE` | un mot de passe d'application iCloud (voir ci-dessous) |
+   | `EMAIL_DESTINATAIRE` | l'adresse qui reçoit l'email (un alias « Masquer mon adresse » convient) |
+
+   `SMTP_PORT` (587 par défaut) et `EMAIL_EXPEDITEUR` (= `SMTP_UTILISATEUR` par défaut)
+   sont facultatifs.
+3. **Mot de passe d'application iCloud** : account.apple.com → *Connexion et sécurité* →
+   *Mots de passe pour app* → créer « grille-politique ». Il ne sert qu'à envoyer cet
+   email et se révoque à tout moment, sans toucher au mot de passe du compte Apple.
+
+### Premiers essais
+
+- Actions → **Collecte horaire** → *Run workflow* : lance une collecte tout de suite.
+  Au bout de quelques minutes, la page est en ligne.
+- Actions → **Email du matin** → *Run workflow*, case « Envoyer tout de suite » cochée :
+  envoie l'email sans attendre 7 h.
+- Sur l'iPhone, ouvrir l'adresse de la page dans Safari, puis Partager → **Sur l'écran
+  d'accueil** : la grille s'ouvre en plein écran, même hors connexion.
+
+### À savoir
+
+- Les journaux des tâches sont publics (dépôt public) : ils n'affichent jamais les
+  secrets ni l'adresse email.
+- GitHub déclenche les tâches planifiées avec quelques minutes de retard, parfois plus.
+- GitHub suspend les tâches planifiées d'un dépôt public après 60 jours sans activité,
+  en prévenant par email : il suffit alors de les réactiver dans l'onglet Actions.
+
 ## Ajouter une chaîne
 
 Ouvrir `config/chaines.yaml` sur GitHub, cliquer sur le crayon, copier une ligne,

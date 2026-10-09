@@ -11,11 +11,11 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 CHEMIN_BASE = Path(__file__).resolve().parent.parent / "data" / "grille.sqlite"
-VERSION_SCHEMA = 2
+VERSION_SCHEMA = 3
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS emissions (
@@ -42,6 +42,22 @@ CREATE TABLE IF NOT EXISTS chaines_resolues (
     identifiant TEXT NOT NULL,                    -- UC… pour YouTube
     playlist    TEXT NOT NULL,                    -- playlist des vidéos mises en ligne (UU…)
     resolu_le   TEXT NOT NULL
+);
+
+-- Version 3 (lot 5) : compte rendu de chaque collecte, pour l'état des sources
+-- dans l'email du matin, et date des emails envoyés (jamais deux le même jour).
+CREATE TABLE IF NOT EXISTS collectes (
+    horodatage  TEXT NOT NULL,
+    source      TEXT NOT NULL,                    -- tv, youtube, twitch
+    reussie     INTEGER NOT NULL,                 -- 1 si la source a répondu
+    retenues    INTEGER NOT NULL,
+    anomalies   TEXT NOT NULL DEFAULT '[]',       -- liste JSON de messages
+    erreur      TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS collectes_horodatage ON collectes (horodatage);
+CREATE TABLE IF NOT EXISTS envois (
+    jour        TEXT PRIMARY KEY,                 -- AAAA-MM-JJ, heure de Paris
+    envoye_le   TEXT NOT NULL
 );
 """
 
@@ -140,3 +156,50 @@ def terminer_directs(connexion: sqlite3.Connection, plateforme: str, ids_en_dire
     connexion.executemany("UPDATE emissions SET statut = 'terminé', fin = ? WHERE id = ?", [(fin, i) for i in finis])
     connexion.commit()
     return len(finis)
+
+
+def noter_collecte(connexion: sqlite3.Connection, source: str, maintenant: datetime, reussie: bool,
+                   retenues: int, anomalies: list[str], erreur: str = "") -> None:
+    connexion.execute(
+        "INSERT INTO collectes VALUES (?, ?, ?, ?, ?, ?)",
+        (maintenant.isoformat(timespec="seconds"), source, int(reussie), retenues,
+         json.dumps(anomalies, ensure_ascii=False), erreur),
+    )
+    # On ne garde que 30 jours de comptes rendus.
+    limite = (maintenant - timedelta(days=30)).isoformat(timespec="seconds")
+    connexion.execute("DELETE FROM collectes WHERE horodatage < ?", (limite,))
+    connexion.commit()
+
+
+def etat_des_sources(connexion: sqlite3.Connection, maintenant: datetime, sources: dict[str, str]) -> list[str]:
+    """Alertes : source sans collecte réussie depuis 24 h, anomalies de la dernière collecte réussie.
+
+    `sources` : identifiant → nom affiché, par exemple {"tv": "Télévision"}.
+    """
+    alertes = []
+    depuis = maintenant - timedelta(hours=24)
+    for source, nom in sources.items():
+        lignes = [
+            (datetime.fromisoformat(h), bool(r), json.loads(a), e)
+            for h, r, a, e in connexion.execute(
+                "SELECT horodatage, reussie, anomalies, erreur FROM collectes WHERE source = ? ORDER BY horodatage",
+                (source,),
+            )
+        ]
+        recentes = [ligne for ligne in lignes if ligne[0] >= depuis]
+        reussies = [ligne for ligne in recentes if ligne[1]]
+        if not reussies:
+            derniere = recentes[-1][3] if recentes else "aucune collecte enregistrée"
+            alertes.append(f"{nom} : aucune collecte réussie depuis 24 h ({derniere})")
+            continue
+        alertes.extend(f"{nom} : {a}" for a in reussies[-1][2])
+    return alertes
+
+
+def deja_envoye(connexion: sqlite3.Connection, jour: str) -> bool:
+    return connexion.execute("SELECT 1 FROM envois WHERE jour = ?", (jour,)).fetchone() is not None
+
+
+def noter_envoi(connexion: sqlite3.Connection, jour: str, maintenant: datetime) -> None:
+    connexion.execute("INSERT OR REPLACE INTO envois VALUES (?, ?)", (jour, maintenant.isoformat(timespec="seconds")))
+    connexion.commit()

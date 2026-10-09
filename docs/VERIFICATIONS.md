@@ -88,3 +88,18 @@ Restent à vérifier avec de vraies clés (accès réseau bloqué pendant le lot
   un planning vide) ;
 - les réponses enregistrées de `tests/reponses/youtube_api.json` et
   `twitch_api.json`, reconstituées d'après la documentation.
+
+## Lot 5 (9 octobre 2026)
+
+Actions GitHub, versions lues dans les dépôts officiels (`action.yml`) :
+`actions/checkout@v6`, `actions/setup-python@v6`, `actions/configure-pages@v6`,
+`actions/deploy-pages@v5` (Node 24), `actions/upload-pages-artifact@v5`. Le
+déploiement Pages exige les permissions `pages: write` et `id-token: write`
+(README de `deploy-pages`). Les fichiers de tâches passent `actionlint`.
+
+SMTP iCloud ([Apple, réglages des serveurs iCloud Mail](https://support.apple.com/102525)) :
+`smtp.mail.me.com`, port 587, STARTTLS, identifiant = adresse iCloud complète,
+mot de passe d'application.
+
+Heure de l'email : GitHub programme en UTC. 7 h à Paris = 5 h UTC en été, 6 h UTC
+en hiver ; deux déclenchements à 4 h 30 et 5 h 30 UTC, puis attente jusqu'à 7 h.

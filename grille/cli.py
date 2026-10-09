@@ -1,16 +1,18 @@
-"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-youtube|-twitch] | lister | page | apercu."""
+"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-youtube|-twitch] | lister | page | apercu
+| chercher-tv | courriel | attente-7h."""
 
 from __future__ import annotations
 
 import argparse
 import os
+import smtplib
 from collections import Counter
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import requests
 
-from grille import acces, config, db, page, tv, twitch, youtube
+from grille import acces, config, courriel, db, page, tv, twitch, youtube
 
 JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
@@ -104,6 +106,7 @@ def _etape_tv(conf, connexion, maintenant, args) -> bool:
             chemin = tv.telecharger(requests.Session())
         except requests.RequestException as e:
             print(f"  ERREUR guide télévision inaccessible ({e})")
+            db.noter_collecte(connexion, "tv", maintenant, False, 0, [], f"guide inaccessible ({e})")
             return False
     try:
         rapport = tv.collecter(conf, chemin, connexion, maintenant)
@@ -117,14 +120,20 @@ def _etape_tv(conf, connexion, maintenant, args) -> bool:
     )
     for nom in rapport.chaines_absentes:
         print(f"  ATTENTION chaîne absente du guide : {nom}")
+    reussie = rapport.lus > 0
+    db.noter_collecte(connexion, "tv", maintenant, reussie, len(rapport.retenues),
+                      [f"chaîne absente du guide : {n}" for n in rapport.chaines_absentes],
+                      "" if reussie else "guide vide pour les chaînes configurées")
     if args.motifs:
         _motifs(rapport.retenues)
-    return True
+    return reussie
 
 
 def _etape_youtube(conf, connexion, maintenant, args) -> bool:
     print("YouTube :")
     rapport = youtube.collecter(conf, requests.Session(), connexion, maintenant)
+    db.noter_collecte(connexion, "youtube", maintenant, not rapport.interrompu, len(rapport.retenues),
+                      rapport.anomalies, rapport.interrompu)
     if rapport.interrompu and not rapport.unites:
         print(f"  ERREUR {rapport.interrompu}")
         return False
@@ -145,6 +154,8 @@ def _etape_youtube(conf, connexion, maintenant, args) -> bool:
 def _etape_twitch(conf, connexion, maintenant, args) -> bool:
     print("Twitch :")
     rapport = twitch.collecter(conf, requests.Session(), connexion, maintenant)
+    db.noter_collecte(connexion, "twitch", maintenant, not rapport.interrompu, len(rapport.retenues),
+                      rapport.anomalies, rapport.interrompu)
     if rapport.interrompu and not rapport.chaines_lues:
         print(f"  ERREUR {rapport.interrompu}")
         return False
@@ -179,6 +190,7 @@ def _collecter(args: argparse.Namespace, plateformes: list[str]) -> int:
             reussites.append(ETAPES[p](conf, connexion, maintenant, args))
         except Exception as e:  # une source cassée ne doit pas arrêter les autres
             print(f"  ERREUR inattendue ({type(e).__name__} : {e})")
+            db.noter_collecte(connexion, p, maintenant, False, 0, [], f"erreur inattendue : {type(e).__name__} : {e}")
             reussites.append(False)
     emissions = [e for e in db.lister(connexion, maintenant, fin) if e["plateforme"] in plateformes]
     connexion.close()
@@ -292,6 +304,44 @@ def cmd_chercher_tv(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_courriel(args: argparse.Namespace) -> int:
+    """Email du matin. Un seul envoi par jour, sauf --forcer. Aucune adresse n'est affichée (journaux publics)."""
+    try:
+        conf = config.charger(args.config)
+    except config.ErreurConfig as e:
+        print(f"ERREUR de configuration : {e}")
+        return 1
+    connexion = db.ouvrir(args.base)
+    maintenant = datetime.now(tv.PARIS)
+    jour = maintenant.date().isoformat()
+    if not args.apercu and not args.forcer and db.deja_envoye(connexion, jour):
+        print(f"Email du {jour} déjà envoyé : rien à faire.")
+        return 0
+    contenu = courriel.contenu(connexion, conf, maintenant)
+    print(f"Email du {contenu['titre_jour']} : {len(contenu['aujourdhui'])} émission(s) aujourd'hui, "
+          f"{len(contenu['temps_forts'])} temps fort(s), {len(contenu['alertes'])} alerte(s) sur les sources")
+    if args.apercu:
+        args.apercu.write_text(courriel.page_html(contenu), encoding="utf-8")
+        print(f"Aperçu écrit dans {args.apercu} (rien n'a été envoyé)")
+        return 0
+    try:
+        courriel.envoyer(courriel.message(contenu))
+    except (courriel.ConfigurationEmailIncomplete, OSError, smtplib.SMTPException) as e:
+        print(f"ERREUR envoi impossible : {e}")
+        return 1
+    db.noter_envoi(connexion, jour, datetime.now(tv.PARIS))
+    connexion.close()
+    print("Email envoyé.")
+    return 0
+
+
+def cmd_attente_7h(args: argparse.Namespace) -> int:
+    """Affiche le nombre de secondes à attendre avant 7 h (heure de Paris), ou « hors-plage »."""
+    attente = courriel.attente_avant_7h(datetime.now(tv.PARIS))
+    print("hors-plage" if attente is None else int(attente))
+    return 0
+
+
 def cmd_lister(args: argparse.Namespace) -> int:
     connexion = db.ouvrir(args.base)
     maintenant, fin = _horizon()
@@ -336,6 +386,12 @@ def main(argv: list[str] | None = None) -> int:
         sp.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")
         sp.set_defaults(func=func)
     sous.add_parser("lister", help="affiche la grille enregistrée en base").set_defaults(func=cmd_lister)
+    p_courriel = sous.add_parser("courriel", help="envoie l'email du matin (une fois par jour)")
+    p_courriel.add_argument("--apercu", type=Path, help="écrit l'email dans ce fichier HTML au lieu de l'envoyer")
+    p_courriel.add_argument("--forcer", action="store_true", help="envoie même si l'email du jour est déjà parti")
+    p_courriel.set_defaults(func=cmd_courriel)
+    sous.add_parser("attente-7h", help="secondes à attendre avant 7 h, heure de Paris (pour la tâche GitHub)"
+                    ).set_defaults(func=cmd_attente_7h)
     p_cherche = sous.add_parser("chercher-tv", help="cherche une émission dans le guide TV et dit si elle est retenue")
     p_cherche.add_argument("texte", help="mot ou titre à chercher (majuscules et accents ignorés)")
     p_cherche.add_argument("--fichier", type=Path, help="guide déjà téléchargé (.xml ou .xml.gz)")
