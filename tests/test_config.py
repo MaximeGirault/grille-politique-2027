@@ -64,3 +64,17 @@ def test_yaml_casse_est_bloquant(tmp_path):
 def test_fichier_absent_est_bloquant(tmp_path):
     with pytest.raises(config.ErreurConfig, match="introuvable"):
         config.charger(tmp_path)
+
+
+def test_plusieurs_liens_de_direct(tmp_path):
+    _ecrire(
+        tmp_path,
+        """\
+        chaines:
+        - {plateforme: tv, nom: "Une", adresse: "Une.fr", categorie: "X", direct: "https://une.fr/direct"}
+        - {plateforme: tv, nom: "Deux", adresse: "Deux.fr", categorie: "X", direct: ["https://a.fr/direct", "pas une adresse"]}
+        """,
+    )
+    conf = config.charger(tmp_path)
+    assert [c.direct for c in conf.chaines] == [("https://une.fr/direct",), ("https://a.fr/direct",)]
+    assert any("pas une adresse" in a for a in conf.anomalies)

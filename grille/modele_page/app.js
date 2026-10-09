@@ -78,6 +78,8 @@ function libelleJour(iso, aujourdhui) {
 function nomLien(url, e) {
   if (url.includes("youtube.com")) return "YouTube";
   if (url.includes("twitch.tv")) return "Twitch";
+  if (url.includes("lcp.fr")) return "Direct LCP";
+  if (url.includes("publicsenat.fr")) return "Direct Public Sénat";
   return e.plateforme === "tv" ? "Direct " + e.chaine : "Regarder";
 }
 

@@ -155,7 +155,7 @@ def collecter(config: Configuration, chemin: Path, connexion, maintenant: dateti
                     "chaine": chaine.nom,
                     "categorie": decision.categorie,
                     "invites": decision.invites,
-                    "lien": [chaine.direct] if chaine.direct else [],
+                    "lien": list(chaine.direct),
                     "statut": statut(p.debut, p.fin, maintenant),
                     "filtre": decision.filtre,
                     "motif": decision.motif,

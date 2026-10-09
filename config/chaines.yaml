@@ -12,7 +12,7 @@
 #   twitch  : https://www.twitch.tv/identifiant
 #   tv      : identifiant XMLTV du guide xmltvfr.fr (ex. France2.fr)
 #   web     : adresse du flux RSS ou de la page de programmation
-# Champ facultatif « direct » : page pour regarder en direct.
+# Champ facultatif « direct » : page pour regarder en direct, ou liste de pages entre crochets.
 
 chaines:
 
@@ -29,7 +29,8 @@ chaines:
 - {plateforme: tv, nom: "CNews", adresse: "CNews.fr", categorie: "Info en continu", direct: "https://www.cnews.fr/le-direct"}
 - {plateforme: tv, nom: "LCI", adresse: "LCI.fr", categorie: "Info en continu", direct: "https://www.tf1.fr/lci/direct"}
 - {plateforme: tv, nom: "franceinfo", adresse: "FranceInfo.fr", categorie: "Info en continu", direct: "https://www.francetvinfo.fr/en-direct/tv.html"}
-- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire", direct: "https://lcp.fr/direct-lcp"}
+# Canal partagé : deux liens, un par antenne. Pages confirmées en attendant l'adresse exacte du direct.
+- {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire", direct: ["https://lcp.fr/la-chaine/regarder-lcp-assemblee-nationale-174335", "https://www.publicsenat.fr/"]}
 
 # Radios filmées (France Inter, franceinfo, RTL, Europe 1, RMC, Sud Radio) :
 # suivies par leurs chaînes YouTube, dans l'annexe « Grands médias » ci-dessous.
