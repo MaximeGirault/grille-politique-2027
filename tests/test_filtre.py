@@ -24,6 +24,8 @@ def test_normaliser():
         ("28 minutes", "Le magazine de débat d'Arte sur l'actualité.", None),  # « débat » hors du titre
         ("28 minutes", "Débat avec Raphaël Glucksmann.", ("mots-clés", "débat")),  # mais un candidat suffit
         ("Le débat de la semaine", "", ("mots-clés", "débat")),
+        ("Réunion publique à Saint-Ouen | Présidentielle 2027", "", ("mots-clés", "meeting")),
+        ("L'heure de vérité", "Avec Édouard Philippe", ("mots-clés", "interview")),
         ("Élection de Miss France 2027", "", None),
         ("Les Horizons perdus", "Film d'aventure", None),  # parti ambigu
         ("Attalens, village suisse", "", None),  # « Attal » seulement en mot entier

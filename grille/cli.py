@@ -111,7 +111,8 @@ def _etape_tv(conf, connexion, maintenant, args) -> bool:
         if not fichier:
             chemin.unlink(missing_ok=True)
     print(
-        f"  {rapport.lus} programmes lus sur les chaînes configurées, {rapport.dans_l_horizon} à venir ; "
+        f"  {rapport.lus} programmes lus sur les chaînes configurées, {rapport.dans_l_horizon} à venir "
+        f"(dont {rapport.masques} de nuit ignorés) ; "
         f"{_resume(rapport.retenues)}, {rapport.annulees} passées en « annulé »"
     )
     for nom in rapport.chaines_absentes:

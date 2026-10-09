@@ -18,9 +18,10 @@ MOTS_CLES = "mots-clés"
 # Indices de catégorie, cherchés dans le titre puis la description (formes normalisées).
 _INDICES_CATEGORIE = [
     ("débat", ["debat", "debats", "face a face", "duel", "entre deux tours"]),
-    ("meeting", ["meeting", "discours", "declaration", "conference de presse", "allocution", "voeux"]),
+    ("meeting", ["meeting", "discours", "declaration", "conference de presse", "allocution", "voeux",
+                 "reunion publique"]),
     ("interview", ["interview", "entretien", "invite", "invitee", "l invite", "grand jury", "questions politiques",
-                   "les quatre verites", "face aux francais"]),
+                   "les quatre verites", "face aux francais", "l heure de verite", "grand entretien"]),
 ]
 
 
