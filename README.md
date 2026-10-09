@@ -66,7 +66,7 @@ Vérification : `python3 -m grille verifier-acces` doit afficher trois `ok`.
 Deux tâches tournent toutes seules sur GitHub (onglet **Actions** du dépôt) :
 
 - **Collecte horaire**, chaque heure vers :17 : télévision, YouTube, Twitch, puis
-  publication de la page sur `https://maximegirault.github.io/grille-politique-2027/`.
+  publication de la page sur `https://tomyumcode.github.io/grille-politique-2027/`.
 - **Email du matin**, à 7 h (heure de Paris) : grille du jour, temps forts des 3 jours
   suivants, état des sources.
 
