@@ -109,6 +109,8 @@ select { font: inherit; padding: 6px; border-radius: 8px; border: 1px solid var(
   font: 700 .65rem/26px -apple-system, sans-serif; color: var(--discret); text-align: center; overflow: hidden;
 }
 .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Émission fusionnée : logos des diffuseurs côte à côte, chacun reste touchable. */
+.logo + .logo { margin-left: -6px; }
 .ligne-haut { align-items: center; }
 .filtre-chaine { margin: 0 0 8px; }
 .filtre-chaine[hidden] { display: none; }
