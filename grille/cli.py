@@ -1,4 +1,4 @@
-"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-youtube|-twitch] | lister | page | apercu
+"""Commandes : python -m grille init | verifier-acces | collecter[-tv|-radio|-youtube|-twitch] | lister | page | apercu
 | chercher-tv | courriel | attente-7h."""
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import requests
 
-from grille import acces, config, courriel, db, page, tv, twitch, youtube
+from grille import acces, config, courriel, db, page, radio, tv, twitch, youtube
 
 JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
@@ -68,7 +68,7 @@ def afficher_grille(emissions: list[dict]) -> None:
             print(f"\n{JOURS[debut.weekday()].capitalize()} {debut.day} {MOIS[debut.month - 1]}")
         invites = f" — avec {', '.join(e['invites'])}" if e["invites"] else ""
         etat = f" [{e['statut']}]" if e["statut"] != "annoncé" else ""
-        plateforme = {"tv": "TV", "youtube": "YouTube", "twitch": "Twitch", "web": "Web"}[e["plateforme"]]
+        plateforme = courriel.PLATEFORMES[e["plateforme"]]
         print(f"  {debut:%H:%M}  {plateforme:<7} {e['chaine'][:24]:<24} {e['categorie']:<9} "
               f"{e['titre']}{invites}{etat}  ({e['filtre']})")
 
@@ -129,6 +129,26 @@ def _etape_tv(conf, connexion, maintenant, args) -> bool:
     return reussie
 
 
+def _etape_radio(conf, connexion, maintenant, args) -> bool:
+    print("Radio France :")
+    rapport = radio.collecter(conf, requests.Session(), connexion, maintenant)
+    db.noter_collecte(connexion, "radio", maintenant, not rapport.interrompu, len(rapport.retenues),
+                      rapport.anomalies, rapport.interrompu)
+    if rapport.interrompu:
+        print(f"  ERREUR {rapport.interrompu}")
+        return False
+    print(
+        f"  {rapport.stations_lues} stations lues, {rapport.programmes} programmes à venir "
+        f"(dont {rapport.masques} de nuit ignorés) ; "
+        f"{_resume(rapport.retenues)}, {rapport.annulees} passées en « annulé »"
+    )
+    for anomalie in rapport.anomalies:
+        print(f"  ATTENTION {anomalie}")
+    if args.motifs:
+        _motifs(rapport.retenues)
+    return True
+
+
 def _etape_youtube(conf, connexion, maintenant, args) -> bool:
     print("YouTube :")
     rapport = youtube.collecter(conf, requests.Session(), connexion, maintenant)
@@ -173,8 +193,8 @@ def _etape_twitch(conf, connexion, maintenant, args) -> bool:
     return not rapport.interrompu
 
 
-ETAPES = {"tv": _etape_tv, "youtube": _etape_youtube, "twitch": _etape_twitch}
-NOMS = {"tv": "à la télévision", "youtube": "sur YouTube", "twitch": "sur Twitch"}
+ETAPES = {"tv": _etape_tv, "radio": _etape_radio, "youtube": _etape_youtube, "twitch": _etape_twitch}
+NOMS = {"tv": "à la télévision", "radio": "à la radio", "youtube": "sur YouTube", "twitch": "sur Twitch"}
 
 
 def _collecter(args: argparse.Namespace, plateformes: list[str]) -> int:
@@ -204,6 +224,10 @@ def cmd_collecter_tv(args: argparse.Namespace) -> int:
     return _collecter(args, ["tv"])
 
 
+def cmd_collecter_radio(args: argparse.Namespace) -> int:
+    return _collecter(args, ["radio"])
+
+
 def cmd_collecter_youtube(args: argparse.Namespace) -> int:
     return _collecter(args, ["youtube"])
 
@@ -213,7 +237,7 @@ def cmd_collecter_twitch(args: argparse.Namespace) -> int:
 
 
 def cmd_collecter(args: argparse.Namespace) -> int:
-    return _collecter(args, ["tv", "youtube", "twitch"])
+    return _collecter(args, ["tv", "radio", "youtube", "twitch"])
 
 
 def _generer_page(args: argparse.Namespace) -> Path | None:
@@ -370,7 +394,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--base", type=Path, default=db.CHEMIN_BASE, help="fichier SQLite")
     sous = parser.add_subparsers(dest="commande", required=True)
     sous.add_parser("init", help="crée la base si besoin et lit la configuration").set_defaults(func=cmd_init)
-    sous.add_parser("verifier-acces", help="teste le guide XMLTV et les API YouTube et Twitch").set_defaults(
+    sous.add_parser("verifier-acces", help="teste le guide XMLTV et les API Radio France, YouTube et Twitch").set_defaults(
         func=cmd_verifier_acces
     )
     collecte = sous.add_parser("collecter-tv", help="lit le guide XMLTV, garde le politique, écrit en base, affiche")
@@ -378,9 +402,10 @@ def main(argv: list[str] | None = None) -> int:
     collecte.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")
     collecte.set_defaults(func=cmd_collecter_tv)
     for nom, func, aide in [
+        ("collecter-radio", cmd_collecter_radio, "grille des stations Radio France (France Inter, franceinfo…)"),
         ("collecter-youtube", cmd_collecter_youtube, "directs YouTube programmés et en cours des chaînes suivies"),
         ("collecter-twitch", cmd_collecter_twitch, "chaînes Twitch en direct et plannings publiés"),
-        ("collecter", cmd_collecter, "télévision, YouTube et Twitch à la suite, chacun indépendamment"),
+        ("collecter", cmd_collecter, "télévision, radio, YouTube et Twitch à la suite, chacun indépendamment"),
     ]:
         sp = sous.add_parser(nom, help=aide)
         sp.add_argument("--motifs", action="store_true", help="affiche la règle qui a retenu chaque émission")

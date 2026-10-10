@@ -22,8 +22,8 @@ from grille.tv import PARIS
 JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
         "novembre", "décembre"]
-PLATEFORMES = {"tv": "TV", "youtube": "YouTube", "twitch": "Twitch", "web": "Web"}
-SOURCES = {"tv": "Télévision", "youtube": "YouTube", "twitch": "Twitch"}
+PLATEFORMES = {"tv": "TV", "radio": "Radio", "youtube": "YouTube", "twitch": "Twitch", "web": "Web"}
+SOURCES = {"tv": "Télévision", "radio": "Radio France", "youtube": "YouTube", "twitch": "Twitch"}
 JOURS_TEMPS_FORTS = 3
 
 

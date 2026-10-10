@@ -1,0 +1,161 @@
+{
+ "_note": "Réponses reconstituées d'après la forme de l'API ouverte de Radio France (requête « grid » et « brands »), à remplacer par de vraies réponses dès que la clé est en place.",
+ "grid_FRANCEINTER": {
+  "data": {
+   "grid": [
+    {
+     "id": "a1_1",
+     "start": 1806127200,
+     "end": 1806134400,
+     "diffusion": {
+      "id": "d1",
+      "title": "Le 7/10 du samedi 27 mars 2027",
+      "standFirst": "Le journal et les chroniques du matin.",
+      "url": "https://www.radiofrance.fr/franceinter/podcasts/le-7-10/le-7-10-du-samedi-27-mars-2027",
+      "show": {
+       "title": "Le 7/10"
+      }
+     }
+    },
+    {
+     "id": "a2_1",
+     "start": 1806145200,
+     "end": 1806148800,
+     "diffusion": {
+      "id": "d2",
+      "title": "Édouard Philippe",
+      "standFirst": "L'ancien Premier ministre, candidat à la présidentielle, répond aux questions.",
+      "url": "https://www.radiofrance.fr/franceinter/podcasts/questions-politiques/questions-politiques-du-samedi-27-mars-2027",
+      "show": {
+       "title": "Questions politiques"
+      }
+     }
+    },
+    {
+     "id": "a3_1",
+     "start": 1806152400,
+     "end": 1806156000,
+     "diffusion": {
+      "id": "d3",
+      "title": "La Terre au carré",
+      "standFirst": "Les océans profonds.",
+      "url": "https://www.radiofrance.fr/franceinter/podcasts/la-terre-au-carre/x",
+      "show": {
+       "title": "La Terre au carré"
+      }
+     }
+    },
+    {
+     "id": "a4_1",
+     "start": 1806195600,
+     "end": 1806199200,
+     "diffusion": {
+      "id": "d4",
+      "title": "Rediffusion : Marine Le Pen",
+      "standFirst": "",
+      "url": "https://www.radiofrance.fr/franceinter/podcasts/rediff/x",
+      "show": {
+       "title": "Les nuits"
+      }
+     }
+    },
+    {
+     "id": "a5_1",
+     "start": 1806301200,
+     "end": 1806302700,
+     "diffusion": {
+      "id": "d5",
+      "title": "Marine Tondelier, invitée de 8h20",
+      "standFirst": "La candidate écologiste est l'invitée du grand entretien.",
+      "url": "https://www.radiofrance.fr/franceinter/podcasts/l-invite-de-8h20/x",
+      "show": {
+       "title": "L'invité de 8h20 : le grand entretien"
+      }
+     }
+    },
+    {
+     "id": "a6_1",
+     "title": "Journal de 18h",
+     "start": 1806336000,
+     "end": 1806337200
+    },
+    {
+     "id": "a7_1",
+     "start": 1806087600,
+     "end": 1806091200,
+     "diffusion": {
+      "id": "d7",
+      "title": "Débat d'hier soir",
+      "standFirst": "",
+      "url": null,
+      "show": {
+       "title": "Le débat"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "grid_FRANCECULTURE": {
+  "data": {
+   "grid": [
+    {
+     "id": "c1_1",
+     "start": 1806168000,
+     "end": 1806170400,
+     "diffusion": {
+      "id": "c1",
+      "title": "La présidentielle vue des régions",
+      "standFirst": "Enquête.",
+      "url": "https://www.radiofrance.fr/franceculture/podcasts/x",
+      "show": {
+       "title": "Le magazine de la rédaction"
+      }
+     }
+    }
+   ]
+  }
+ },
+ "erreur_show": {
+  "errors": [
+   {
+    "message": "Cannot query field \"show\" on type \"Diffusion\".",
+    "locations": [
+     {
+      "line": 1,
+      "column": 90
+     }
+    ]
+   }
+  ]
+ },
+ "erreur_station": {
+  "errors": [
+   {
+    "message": "Value \"FRANCEPOLITIQUE\" does not exist in \"StationsEnum\" enum."
+   }
+  ]
+ },
+ "brands": {
+  "data": {
+   "brands": [
+    {
+     "id": "FRANCEINTER",
+     "title": "France Inter"
+    },
+    {
+     "id": "FRANCEINFO",
+     "title": "franceinfo"
+    },
+    {
+     "id": "FRANCECULTURE",
+     "title": "France Culture"
+    },
+    {
+     "id": "FIP",
+     "title": "FIP"
+    }
+   ]
+  }
+ }
+}

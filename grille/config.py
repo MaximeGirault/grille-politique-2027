@@ -14,7 +14,7 @@ from pathlib import Path
 import yaml
 
 DOSSIER_CONFIG = Path(__file__).resolve().parent.parent / "config"
-PLATEFORMES = ("tv", "youtube", "twitch", "web")
+PLATEFORMES = ("tv", "radio", "youtube", "twitch", "web")
 
 _YOUTUBE = re.compile(
     r"^https?://(?:www\.)?youtube\.com/"
@@ -22,6 +22,7 @@ _YOUTUBE = re.compile(
 )
 _TWITCH = re.compile(r"^https?://(?:www\.)?twitch\.tv/(?P<login>[A-Za-z0-9_]{3,25})/?$")
 _XMLTV_ID = re.compile(r"^[\w.\-]+$")
+_STATION = re.compile(r"^[A-Z][A-Z0-9_]+$")  # code de station Radio France, ex. FRANCEINTER
 _WEB = re.compile(r"^https?://\S+$")
 
 
@@ -40,7 +41,7 @@ class Chaine:
     direct: tuple[str, ...] = ()
     # Logo imposé dans chaines.yaml (sinon celui fourni par la source).
     logo: str = ""
-    # Identifiant extrait de l'adresse : handle ou ID YouTube, login Twitch, ID XMLTV…
+    # Identifiant extrait de l'adresse : handle ou ID YouTube, login Twitch, ID XMLTV, station…
     cle: dict = field(default_factory=dict, hash=False, compare=False)
 
 
@@ -90,6 +91,8 @@ def analyser_adresse(plateforme: str, adresse: str) -> dict | None:
         return {"login": m["login"].lower()} if m else None
     if plateforme == "tv":
         return {"xmltv_id": adresse} if _XMLTV_ID.match(adresse) else None
+    if plateforme == "radio":
+        return {"station": adresse} if _STATION.match(adresse) else None
     if plateforme == "web":
         return {"url": adresse} if _WEB.match(adresse) else None
     return None

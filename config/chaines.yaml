@@ -1,6 +1,6 @@
 # Chaînes suivies — une ligne par chaîne.
 #
-# Champs : plateforme (tv, youtube, twitch ou web), nom, adresse, categorie.
+# Champs : plateforme (tv, radio, youtube, twitch ou web), nom, adresse, categorie.
 # Champ facultatif : a_confirmer: true pour une adresse non vérifiée (contrôlée au lot 3).
 #
 # Pour ajouter une chaîne depuis GitHub (navigateur ou téléphone) : bouton crayon,
@@ -11,6 +11,7 @@
 #   youtube : https://www.youtube.com/@pseudo, /channel/UC…, /user/…, /c/…
 #   twitch  : https://www.twitch.tv/identifiant
 #   tv      : identifiant XMLTV du guide xmltvfr.fr (ex. France2.fr)
+#   radio   : code de station de l'API Radio France (ex. FRANCEINTER)
 #   web     : adresse du flux RSS ou de la page de programmation
 # Champ facultatif « direct » : page pour regarder en direct, ou liste de pages entre crochets.
 # Champ facultatif « logo » : adresse d'une image, à la place du logo fourni par la source.
@@ -33,8 +34,17 @@ chaines:
 # Canal partagé, un seul direct sur france.tv (adresse relevée le 9 octobre 2026).
 - {plateforme: tv, nom: "LCP / Public Sénat", adresse: "LaChaineParlementaire.fr", categorie: "Chaîne parlementaire", direct: "https://www.france.tv/lcp-public-senat/direct.html"}
 
-# Radios filmées (France Inter, franceinfo, RTL, Europe 1, RMC, Sud Radio) :
-# suivies par leurs chaînes YouTube, dans l'annexe « Grands médias » ci-dessous.
+# --- Radio (grille de l'API Radio France, invités souvent annoncés la veille) ---
+# Même nom que la chaîne YouTube de la station : un seul logo, et toucher le logo
+# montre la radio et ses vidéos ensemble. Codes : FRANCEINTER, FRANCEINFO,
+# FRANCECULTURE… (python3 -m grille verifier-acces liste les codes si l'un est faux).
+# « direct » : page pour écouter en direct (adresses à vérifier dans le navigateur).
+- {plateforme: radio, nom: "France Inter", adresse: "FRANCEINTER", categorie: "Radio publique", direct: "https://www.radiofrance.fr/franceinter"}
+- {plateforme: radio, nom: "franceinfo", adresse: "FRANCEINFO", categorie: "Radio publique, info en continu", direct: "https://www.francetvinfo.fr/en-direct/radio.html"}
+- {plateforme: radio, nom: "France Culture", adresse: "FRANCECULTURE", categorie: "Radio publique, débats d'idées", direct: "https://www.radiofrance.fr/franceculture"}
+
+# Radios privées (RTL, Europe 1, RMC, Sud Radio, Radio Nova) : pas d'API publique de
+# grille ; leurs directs filmés sont suivis par leurs chaînes YouTube ci-dessous.
 
 # --- Chaînes prioritaires (fournies le 7 octobre 2026) ---
 - {plateforme: twitch, nom: "BackSeat (Jean Massiet)", adresse: "https://www.twitch.tv/jeanmassiet", categorie: "Décryptage"}
@@ -85,6 +95,8 @@ chaines:
 - {plateforme: youtube, nom: "RTL", adresse: "https://www.youtube.com/@rtl_france", categorie: "Radio privée, généraliste"}
 - {plateforme: youtube, nom: "RMC", adresse: "https://www.youtube.com/@RMC", categorie: "Radio privée, généraliste"}
 - {plateforme: youtube, nom: "Sud Radio", adresse: "https://www.youtube.com/@SudRadioOfficiel", categorie: "Radio privée, généraliste"}
+# Ajoutée le 10 octobre 2026 : émission politique « 2027 raisons de voter ». Pseudo relevé sur un annuaire de radios.
+- {plateforme: youtube, nom: "Radio Nova", adresse: "https://www.youtube.com/@RADIONOVAChannel", categorie: "Radio privée, culture", a_confirmer: true}
 - {plateforme: youtube, nom: "Quotidien", adresse: "https://www.youtube.com/@QuotidienTMC", categorie: "Talk-show"}
 - {plateforme: youtube, nom: "Le Figaro TV", adresse: "https://www.youtube.com/@LeFigaroTV", categorie: "Presse, droite"}
 - {plateforme: youtube, nom: "Le Figaro", adresse: "https://www.youtube.com/@LeFigaro", categorie: "Presse, droite"}

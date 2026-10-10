@@ -23,5 +23,5 @@ def test_valeurs_hors_liste_refusees(tmp_path):
     with pytest.raises(sqlite3.IntegrityError):
         connexion.execute(
             "INSERT INTO emissions (id, titre, debut, plateforme, chaine, vu_le) VALUES (?, ?, ?, ?, ?, ?)",
-            ("radio:1", "x", "2027-03-15T21:00:00+01:00", "radio", "x", "2027-03-15T20:00:00+01:00"),
+            ("fax:1", "x", "2027-03-15T21:00:00+01:00", "fax", "x", "2027-03-15T20:00:00+01:00"),
         )

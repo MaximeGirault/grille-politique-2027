@@ -1,6 +1,6 @@
 # grille-politique-2027
 
-Grille des émissions politiques (télévision, YouTube, Twitch, Web) jusqu'au second
+Grille des émissions politiques (télévision, radio, YouTube, Twitch, Web) jusqu'au second
 tour de la présidentielle 2027. Cahier des charges : `CAHIER_DES_CHARGES.md`.
 
 ## Installation
@@ -13,12 +13,13 @@ python3 -m pip install -r requirements.txt
 
 ```bash
 python3 -m grille init            # crée data/grille.sqlite si besoin et lit la configuration
-python3 -m grille verifier-acces  # teste le guide XMLTV et les API YouTube et Twitch
+python3 -m grille verifier-acces  # teste le guide XMLTV et les API Radio France, YouTube et Twitch
 python3 -m grille collecter-tv    # télécharge le guide TV, garde le politique, écrit en base, affiche la grille
 python3 -m grille collecter-tv --motifs   # idem, avec la règle qui a retenu chaque émission
+python3 -m grille collecter-radio    # grille des stations Radio France (France Inter, franceinfo, France Culture)
 python3 -m grille collecter-youtube  # directs YouTube programmés et en cours des chaînes suivies
 python3 -m grille collecter-twitch   # chaînes Twitch en direct et plannings publiés
-python3 -m grille collecter       # les trois sources à la suite ; si l'une tombe, les autres continuent
+python3 -m grille collecter       # toutes les sources à la suite ; si l'une tombe, les autres continuent
 python3 -m grille lister          # affiche la grille enregistrée (aujourd'hui et les 7 jours suivants)
 python3 -m grille chercher-tv "Franc-jeu"   # trouve une émission dans le guide TV et dit si elle est retenue
 python3 -m grille page            # génère la page web dans le dossier site/
@@ -41,7 +42,7 @@ en HTTPS : ils fonctionneront une fois la page publiée sur GitHub Pages (lot 5)
 
 ## Clés d'API
 
-YouTube et Twitch demandent des clés. Sur ton ordinateur, copie `.env.exemple` en
+Radio France, YouTube et Twitch demandent des clés. Sur ton ordinateur, copie `.env.exemple` en
 `.env` (même dossier) et remplis-le : ce fichier est ignoré par Git, il ne sera
 jamais publié. Une fois en ligne (lot 5), les mêmes valeurs iront dans les secrets
 GitHub.
@@ -59,13 +60,17 @@ GitHub.
    catégorie « Other », type de client « Confidentiel ».
 3. « Gérer » : copier l'identifiant client, puis « Nouveau secret » et copier le secret.
 
-Vérification : `python3 -m grille verifier-acces` doit afficher trois `ok`.
+**Radio France (`RADIOFRANCE_API_KEY`)**
+1. developers.radiofrance.fr : créer un compte (gratuit, usage non commercial).
+2. Une fois connecté, demander une clé (« token ») et la copier.
+
+Vérification : `python3 -m grille verifier-acces` doit afficher quatre `ok`.
 
 ## Mise en ligne (GitHub)
 
 Deux tâches tournent toutes seules sur GitHub (onglet **Actions** du dépôt) :
 
-- **Collecte horaire**, chaque heure vers :17 : télévision, YouTube, Twitch, puis
+- **Collecte horaire**, chaque heure vers :17 : télévision, radio, YouTube, Twitch, puis
   publication de la page sur `https://tomyumcode.github.io/grille-politique-2027/`.
 - **Email du matin**, à 7 h (heure de Paris) : grille du jour, temps forts des 3 jours
   suivants, état des sources.
@@ -81,6 +86,7 @@ La base est conservée sur la branche `donnees`, qui ne garde que la dernière v
 
    | Nom | Valeur |
    | --- | --- |
+   | `RADIOFRANCE_API_KEY` | la clé Radio France |
    | `YOUTUBE_API_KEY` | la clé YouTube (comme dans `.env`) |
    | `TWITCH_CLIENT_ID` | l'identifiant client Twitch |
    | `TWITCH_CLIENT_SECRET` | le secret Twitch |
@@ -121,7 +127,8 @@ l'adapter, puis « Commit changes ».
 
 Chaque émission affiche le logo de sa chaîne ; le toucher n'affiche plus que cette
 chaîne (✕ pour revenir à tout). Les logos viennent des sources : vignette YouTube,
-image de profil Twitch, balise `<icon>` du guide TV. Sans logo, la page affiche les
+image de profil Twitch, balise `<icon>` du guide TV ; une radio prend le logo de la
+chaîne YouTube du même nom. Sans logo, la page affiche les
 initiales. Pour imposer un logo, ajouter `logo: "https://…"` à la ligne de la chaîne
 dans `config/chaines.yaml`.
 
