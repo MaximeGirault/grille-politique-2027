@@ -142,6 +142,8 @@ liste_blanche:
     - "Franc-jeu"
     # Titre trop courant pour toutes les chaînes : limité à la chaîne indiquée.
     - {titre: "Face à face", chaine: "BFMTV"}
+    # Radio Nova, saison 2026-2027 (vidéos YouTube dont le titre commence ainsi).
+    - {titre: "2027 raisons de voter", chaine: "Radio Nova"}
 
 # Filtre 2 : mots-clés. Les noms de candidats, de personnalités et de partis
 # ci-dessus (sauf les partis « ambigu ») s'ajoutent automatiquement à cette liste.

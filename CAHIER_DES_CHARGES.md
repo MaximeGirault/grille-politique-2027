@@ -209,7 +209,8 @@ Décidé au lot 5 :
 
 Ajouté après le lot 5 :
 
-- [ ] Radios : collecteur Radio France (API officielle), puis les autres stations susceptibles de diffuser des débats politiques.
+- [ ] Radios : collecteur Radio France (API officielle : France Inter, franceinfo, France Culture), puis les autres stations susceptibles de diffuser des débats politiques. Radio Nova ajoutée le 10 octobre 2026 (émission « 2027 raisons de voter »), suivie par sa chaîne YouTube faute d'API de grille, comme RTL, Europe 1, RMC et Sud Radio.
+- [ ] Lot 6 : lire les agendas publiés sur les sites des candidats et des partis, pour annoncer à l'avance les meetings diffusés en direct sans programmation YouTube (meeting de Gabriel Attal à Lyon, 10 octobre 2026, apparu seulement à son début).
 - [ ] Lot 6 : lire les invités annoncés sur les sites des chaînes (france.tv et autres) quand le guide télévision ne les donne pas, comme pour Franc-jeu (France 2).
 
 ---

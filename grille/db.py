@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 CHEMIN_BASE = Path(__file__).resolve().parent.parent / "data" / "grille.sqlite"
-VERSION_SCHEMA = 4
+VERSION_SCHEMA = 5
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS emissions (
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS emissions (
     titre       TEXT NOT NULL,
     debut       TEXT NOT NULL,
     fin         TEXT,
-    plateforme  TEXT NOT NULL CHECK (plateforme IN ('tv', 'youtube', 'twitch', 'web')),
+    plateforme  TEXT NOT NULL CHECK (plateforme IN ('tv', 'radio', 'youtube', 'twitch', 'web')),
     chaine      TEXT NOT NULL,
     categorie   TEXT CHECK (categorie IN ('débat', 'interview', 'meeting', 'analyse')),
     invites     TEXT NOT NULL DEFAULT '[]',
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS chaines_resolues (
 -- dans l'email du matin, et date des emails envoyés (jamais deux le même jour).
 CREATE TABLE IF NOT EXISTS collectes (
     horodatage  TEXT NOT NULL,
-    source      TEXT NOT NULL,                    -- tv, youtube, twitch
+    source      TEXT NOT NULL,                    -- tv, radio, youtube, twitch
     reussie     INTEGER NOT NULL,                 -- 1 si la source a répondu
     retenues    INTEGER NOT NULL,
     anomalies   TEXT NOT NULL DEFAULT '[]',       -- liste JSON de messages
@@ -74,9 +74,30 @@ def ouvrir(chemin: Path = CHEMIN_BASE) -> sqlite3.Connection:
     chemin.parent.mkdir(parents=True, exist_ok=True)
     connexion = sqlite3.connect(chemin)
     connexion.executescript(SCHEMA)
+    _accepter_la_radio(connexion)
     connexion.execute(f"PRAGMA user_version = {VERSION_SCHEMA}")
     connexion.commit()
     return connexion
+
+
+def _accepter_la_radio(connexion: sqlite3.Connection) -> None:
+    """Version 5 : plateforme « radio ». SQLite ne modifie pas une contrainte CHECK :
+    la table d'une base plus ancienne est recopiée dans une table au nouveau schéma."""
+    (sql,) = connexion.execute("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'emissions'").fetchone()
+    if "'radio'" in sql:
+        return
+    debut = SCHEMA.index("CREATE TABLE IF NOT EXISTS emissions")
+    creation = SCHEMA[debut:SCHEMA.index(");", debut) + 2].replace("IF NOT EXISTS emissions", "emissions_v5")
+    connexion.commit()
+    connexion.executescript(f"""
+        BEGIN;
+        {creation}
+        INSERT INTO emissions_v5 SELECT * FROM emissions;
+        DROP TABLE emissions;
+        ALTER TABLE emissions_v5 RENAME TO emissions;
+        CREATE INDEX IF NOT EXISTS emissions_debut ON emissions (debut);
+        COMMIT;
+    """)
 
 
 def enregistrer_collecte(

@@ -37,6 +37,7 @@ class Session:
         self.appels.append(("GET", url, params))
         return self.routeur("GET", url, params)
 
-    def post(self, url, data=None, **kwargs):
-        self.appels.append(("POST", url, data))
-        return self.routeur("POST", url, data)
+    def post(self, url, data=None, json=None, **kwargs):
+        corps = data if json is None else json  # formulaire (Twitch) ou JSON (GraphQL Radio France)
+        self.appels.append(("POST", url, corps))
+        return self.routeur("POST", url, corps)

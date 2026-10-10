@@ -103,3 +103,29 @@ mot de passe d'application.
 
 Heure de l'email : GitHub programme en UTC. 7 h à Paris = 5 h UTC en été, 6 h UTC
 en hiver ; deux déclenchements à 4 h 30 et 5 h 30 UTC, puis attente jusqu'à 7 h.
+
+## Radios (10 octobre 2026)
+
+API ouverte de Radio France (portail developers.radiofrance.fr, gratuite, usage non
+commercial, compte nécessaire). Le portail et l'API n'étaient pas joignables depuis
+l'environnement de développement : la forme des requêtes vient du code source d'une
+intégration publique qui l'utilise
+([radio-france-home-assistant, `api.py`](https://github.com/kamaradclimber/radio-france-home-assistant/blob/main/custom_components/radio_france/api.py)) :
+
+- adresse `https://openapi.radiofrance.fr/v1/graphql?x-token=<clé>` (requête POST GraphQL) ;
+- `grid(start: <horodatage Unix>, end: <horodatage Unix>, station: FRANCEINTER)` renvoie
+  des étapes `DiffusionStep` (`id start end diffusion { id title standFirst url }`),
+  `BlankStep` (`id title start end`) et `TrackStep` (musique, non demandée) ;
+- `brands { id title }` liste les stations : FRANCEINTER, FRANCEINFO, FRANCECULTURE,
+  FRANCEMUSIQUE, MOUV, FIP.
+
+Restent à vérifier avec la vraie clé : le champ `diffusion { show { title } }` (nom de
+l'émission ; le collecteur s'en passe et le signale s'il est refusé), la durée maximale
+couverte par une requête `grid` (le collecteur demande 8 jours), le quota, les adresses
+« direct » de `config/chaines.yaml` et la réponse enregistrée
+`tests/reponses/radiofrance_api.json`, reconstituée.
+
+Radios privées (RTL, Europe 1, RMC, Sud Radio, Radio Nova) : aucune API publique de
+grille trouvée ; sites non joignables depuis l'environnement de développement. Elles
+restent suivies par leurs chaînes YouTube. Radio Nova : pseudo `@RADIONOVAChannel`
+relevé sur un annuaire de radios (OnlineRadioBox), marqué « à confirmer ».

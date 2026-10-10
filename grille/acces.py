@@ -19,6 +19,7 @@ YOUTUBE_QUOTA_JOUR = 10_000
 TWITCH_TOKEN = "https://id.twitch.tv/oauth2/token"
 TWITCH_API = "https://api.twitch.tv/helix"
 XMLTV_TNT = "https://xmltvfr.fr/xmltv/xmltv_tnt.xml.gz"
+RADIOFRANCE_API = "https://openapi.radiofrance.fr/v1/graphql"
 
 DELAI = 20  # secondes
 
@@ -109,6 +110,32 @@ def verifier_twitch(config: Configuration, session: requests.Session) -> Resulta
     return Resultat("Twitch", "ok", detail)
 
 
+def verifier_radiofrance(config: Configuration, session: requests.Session) -> Resultat:
+    stations = [c.cle["station"] for c in config.chaines if c.plateforme == "radio"]
+    if not stations:
+        return Resultat("Radio France", "non configuré", "aucune station radio dans chaines.yaml")
+    cle = os.environ.get("RADIOFRANCE_API_KEY")
+    if not cle:
+        return Resultat("Radio France", "non configuré", "secret RADIOFRANCE_API_KEY absent")
+    try:
+        # La clé passe dans l'adresse : elle est masquée dans tout message affiché.
+        r = session.post(RADIOFRANCE_API, params={"x-token": cle}, json={"query": "{ brands { id title } }"},
+                         timeout=DELAI)
+    except requests.RequestException as e:
+        return Resultat("Radio France", "erreur", f"réseau : {str(e).replace(cle, '***')}")
+    if r.status_code != 200:
+        return Resultat("Radio France", "erreur", _erreur_http(r).replace(cle, "***"))
+    marques = {b.get("id") for b in (r.json().get("data") or {}).get("brands") or []}
+    if not marques:
+        return Resultat("Radio France", "erreur", "clé acceptée, mais liste des stations vide")
+    absentes = sorted(set(stations) - marques)
+    detail = f"clé acceptée ; {len(stations) - len(absentes)}/{len(stations)} stations reconnues"
+    if absentes:
+        return Resultat("Radio France", "erreur", detail + " ; inconnues : " + ", ".join(absentes)
+                        + " (codes possibles : " + ", ".join(sorted(m for m in marques if m)) + ")")
+    return Resultat("Radio France", "ok", detail)
+
+
 def verifier_xmltv(session: requests.Session) -> Resultat:
     try:
         with session.get(XMLTV_TNT, stream=True, timeout=DELAI) as r:
@@ -136,4 +163,5 @@ def _decompresser_debut(donnees: bytes) -> bytes:
 
 def verifier_tout(config: Configuration, session: requests.Session | None = None) -> list[Resultat]:
     session = session or requests.Session()
-    return [verifier_xmltv(session), verifier_youtube(config, session), verifier_twitch(config, session)]
+    return [verifier_xmltv(session), verifier_radiofrance(config, session), verifier_youtube(config, session),
+            verifier_twitch(config, session)]
