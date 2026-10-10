@@ -44,6 +44,17 @@ def _meme_diffusion(a: dict, b: dict) -> bool:
     return a["chaine"] != b["chaine"] and ecart <= ECART_MAX and meme_titre(a["titre"], b["titre"])
 
 
+def precision(titre: str, titre_de_tete: str) -> str:
+    """Ce qui distingue une version de la diffusion principale, quand son titre la
+    prolonge après un séparateur : « … Clermont-Ferrand - Vélotypie et LSF » → « Vélotypie et LSF »."""
+    if not titre.casefold().startswith(titre_de_tete.casefold()):
+        return ""
+    reste = titre[len(titre_de_tete):]
+    if not reste.lstrip()[:1] in ("-", "—", "–", "|", ":", "(", "[", "·"):
+        return ""
+    return reste.strip().lstrip("-—–|:([·").rstrip(")]").strip()
+
+
 def _representant(groupe: list[dict]) -> dict:
     return min(groupe, key=lambda e: (PRIORITE.get(e["plateforme"], 9), e["filtre"] != "liste blanche",
                                       len(e["titre"]), e["debut"]))
@@ -77,6 +88,7 @@ def fusionner(emissions: list[dict]) -> list[dict]:
             fusion["statut"] = "en direct"
         if any(m["filtre"] == "liste blanche" for m in membres):
             fusion["filtre"] = "liste blanche"
-        fusion["sources"] = [{"chaine": m["chaine"], "plateforme": m["plateforme"], "lien": m["lien"]} for m in membres]
+        fusion["sources"] = [{"chaine": m["chaine"], "plateforme": m["plateforme"], "lien": m["lien"],
+                              "precision": precision(m["titre"], tete["titre"])} for m in membres]
         resultat.append(fusion)
     return sorted(resultat, key=lambda e: (datetime.fromisoformat(e["debut"]), e["chaine"]))
