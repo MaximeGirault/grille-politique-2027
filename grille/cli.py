@@ -12,7 +12,7 @@ from pathlib import Path
 
 import requests
 
-from grille import acces, config, courriel, db, page, radio, tv, twitch, youtube
+from grille import acces, config, courriel, db, fusion, page, radio, tv, twitch, youtube
 
 JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
 MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
@@ -69,8 +69,9 @@ def afficher_grille(emissions: list[dict]) -> None:
         invites = f" — avec {', '.join(e['invites'])}" if e["invites"] else ""
         etat = f" [{e['statut']}]" if e["statut"] != "annoncé" else ""
         plateforme = courriel.PLATEFORMES[e["plateforme"]]
+        aussi = f"  [aussi : {', '.join(s['chaine'] for s in e['sources'][1:])}]" if e.get("sources") else ""
         print(f"  {debut:%H:%M}  {plateforme:<7} {e['chaine'][:24]:<24} {e['categorie']:<9} "
-              f"{e['titre']}{invites}{etat}  ({e['filtre']})")
+              f"{e['titre']}{invites}{etat}  ({e['filtre']}){aussi}")
 
 
 def _horizon() -> tuple[datetime, datetime]:
@@ -213,6 +214,7 @@ def _collecter(args: argparse.Namespace, plateformes: list[str]) -> int:
             db.noter_collecte(connexion, p, maintenant, False, 0, [], f"erreur inattendue : {type(e).__name__} : {e}")
             reussites.append(False)
     emissions = [e for e in db.lister(connexion, maintenant, fin) if e["plateforme"] in plateformes]
+    emissions = fusion.fusionner(emissions)
     connexion.close()
     ou = NOMS[plateformes[0]] if len(plateformes) == 1 else "toutes sources"
     print(f"\nÉmissions politiques {ou}, aujourd'hui et les 7 jours suivants : {len(emissions)}")
@@ -369,7 +371,7 @@ def cmd_attente_7h(args: argparse.Namespace) -> int:
 def cmd_lister(args: argparse.Namespace) -> int:
     connexion = db.ouvrir(args.base)
     maintenant, fin = _horizon()
-    emissions = db.lister(connexion, maintenant, fin)
+    emissions = fusion.fusionner(db.lister(connexion, maintenant, fin))
     connexion.close()
     print(f"Émissions politiques, aujourd'hui et les 7 jours suivants : {len(emissions)}")
     afficher_grille(emissions)

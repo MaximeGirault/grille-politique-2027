@@ -15,7 +15,7 @@ import ssl
 from datetime import datetime, timedelta
 from email.message import EmailMessage
 
-from grille import db
+from grille import db, fusion
 from grille.config import Configuration
 from grille.tv import PARIS
 
@@ -44,9 +44,10 @@ def contenu(connexion, config: Configuration, maintenant: datetime) -> dict:
     maintenant = maintenant.astimezone(PARIS)
     minuit = datetime.combine(maintenant.date(), datetime.min.time(), PARIS)
     candidats = {c["nom"] for c in config.candidats}
-    aujourdhui = db.lister(connexion, maintenant, minuit + timedelta(days=1))
+    aujourdhui = fusion.fusionner(db.lister(connexion, maintenant, minuit + timedelta(days=1)))
     a_venir = [
-        e for e in db.lister(connexion, minuit + timedelta(days=1), minuit + timedelta(days=1 + JOURS_TEMPS_FORTS))
+        e for e in fusion.fusionner(db.lister(connexion, minuit + timedelta(days=1),
+                                              minuit + timedelta(days=1 + JOURS_TEMPS_FORTS)))
         if temps_fort(e, candidats) and datetime.fromisoformat(e["debut"]) >= minuit + timedelta(days=1)
     ]
     return {
@@ -58,12 +59,17 @@ def contenu(connexion, config: Configuration, maintenant: datetime) -> dict:
     }
 
 
+def diffuseurs(e: dict) -> str:
+    """« LCP / Public Sénat (TV), BackSeat (Jean Massiet) (Twitch) » pour une émission fusionnée."""
+    return ", ".join(f"{s['chaine']} ({PLATEFORMES[s['plateforme']]})" for s in e.get("sources") or [e])
+
+
 def _ligne_texte(e: dict, avec_jour: bool = False) -> str:
     debut = datetime.fromisoformat(e["debut"])
     quand = (_jour(debut) + " " if avec_jour else "") + f"{debut:%H:%M}"
     invites = f" — avec {', '.join(e['invites'])}" if e["invites"] else ""
-    lien = f"\n      {e['lien'][0]}" if e["lien"] else ""
-    return f"  {quand}  {e['chaine']} ({PLATEFORMES[e['plateforme']]}) · {e['categorie']}\n    {e['titre']}{invites}{lien}"
+    lien = "".join(f"\n      {url}" for url in e["lien"])
+    return f"  {quand}  {diffuseurs(e)} · {e['categorie']}\n    {e['titre']}{invites}{lien}"
 
 
 def texte(c: dict) -> str:
@@ -89,11 +95,16 @@ def _ligne_html(e: dict, avec_jour: bool = False) -> str:
     if e["lien"]:
         titre = f'<a href="{html.escape(e["lien"][0])}" style="color:#1f3a5f">{titre}</a>'
     invites = f'<div style="color:#5b6470;font-size:13px">Avec {html.escape(", ".join(e["invites"]))}</div>' if e["invites"] else ""
+    # Émission fusionnée : un lien par autre diffuseur, sous le titre.
+    autres = [f'<a href="{html.escape(src["lien"][0])}" style="color:#1f3a5f">{html.escape(src["chaine"])}</a>'
+              for src in (e.get("sources") or [])[1:] if src["lien"]]
+    if autres:
+        invites += f'<div style="font-size:13px">Aussi sur {" · ".join(autres)}</div>'
     couleur = _COULEURS.get(e["categorie"], "#5b6470")
     return (
         '<tr><td style="padding:8px 10px 8px 0;vertical-align:top;white-space:nowrap;font-size:14px">' + quand + "</td>"
         f'<td style="padding:8px 0;border-left:3px solid {couleur};padding-left:10px">'
-        f'<div style="font-size:12px;color:#5b6470">{html.escape(e["chaine"])} · {PLATEFORMES[e["plateforme"]]} · '
+        f'<div style="font-size:12px;color:#5b6470">{html.escape(diffuseurs(e))} · '
         f'<span style="color:{couleur};font-weight:bold;text-transform:uppercase">{html.escape(e["categorie"])}</span></div>'
         f'<div style="font-size:15px;font-weight:600">{titre}</div>{invites}</td></tr>'
     )

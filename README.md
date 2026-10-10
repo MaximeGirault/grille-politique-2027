@@ -132,6 +132,14 @@ chaîne YouTube du même nom. Sans logo, la page affiche les
 initiales. Pour imposer un logo, ajouter `logo: "https://…"` à la ligne de la chaîne
 dans `config/chaines.yaml`.
 
+## Doublons entre chaînes
+
+Une même diffusion vue sur plusieurs chaînes (Questions au gouvernement sur LCP et
+sur Twitch, un meeting sur la chaîne du candidat et sur celle du parti) ne fait
+qu'une carte, avec un logo et un bouton par diffuseur. Règle : chaînes différentes,
+débuts à moins de 20 minutes d'écart, et titres qui concordent (`grille/fusion.py`).
+La base garde chaque diffusion séparément : la fusion se fait à l'affichage.
+
 ## Régler le filtre politique
 
 Tout se passe dans `config/politique.yaml`. Si une émission sans rapport apparaît,

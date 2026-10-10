@@ -59,10 +59,16 @@ function termine(e, maintenant) {
   return e.statut === "terminé" || (!enDirect(e, maintenant) && Date.parse(e.debut) < maintenant - DIRECT_SANS_FIN_MAX);
 }
 
+// Diffuseurs d'une émission : plusieurs quand la même diffusion a été fusionnée.
+function sources(e) {
+  return e.sources || [{ chaine: e.chaine, plateforme: e.plateforme, lien: e.lien }];
+}
+
 function visible(e) {
-  return etat.categories.has(e.categorie) && etat.plateformes.has(e.plateforme)
+  const s = sources(e);
+  return etat.categories.has(e.categorie) && s.some((x) => etat.plateformes.has(x.plateforme))
     && (!etat.candidat || e.invites.includes(etat.candidat))
-    && (!etat.chaine || e.chaine === etat.chaine);
+    && (!etat.chaine || s.some((x) => x.chaine === etat.chaine));
 }
 
 function initiales(nom) {
@@ -119,19 +125,33 @@ function nomLien(url, e) {
   return e.plateforme === "tv" ? "Direct " + e.chaine : "Regarder";
 }
 
+function libelleLien(url, source, plusieurs) {
+  const nom = nomLien(url, source);
+  // Plusieurs diffuseurs : préciser lequel (« YouTube · La France insoumise »).
+  return plusieurs && !nom.includes(source.chaine) && !nom.includes("LCP") ? nom + " · " + source.chaine : nom;
+}
+
 function carte(e, maintenant) {
   const direct = enDirect(e, maintenant);
   const fini = !direct && termine(e, maintenant);
   const horaire = e.debut.slice(11, 16) + (e.fin && e.fin.slice(0, 10) === e.debut.slice(0, 10) ? "–" + e.fin.slice(11, 16) : "");
+  const s = sources(e);
+  const plateformes = [...new Set(s.map((x) => PLATEFORMES[x.plateforme] || x.plateforme))];
   const haut = el("div", { classe: "ligne-haut" },
-    logo(e.chaine, true),
+    ...s.map((x) => logo(x.chaine, true)),
     el("span", { classe: "horaire", texte: horaire }),
     direct ? el("span", { classe: "badge-direct", texte: "En direct" }) : null,
-    el("span", { classe: "chaine", texte: e.chaine }),
-    el("span", { texte: PLATEFORMES[e.plateforme] || e.plateforme }));
+    el("span", { classe: "chaine", texte: s.map((x) => x.chaine).join(" · ") }),
+    el("span", { texte: plateformes.join(" · ") }));
   const bas = el("div", { classe: "ligne-bas" }, el("span", { classe: "categorie", texte: e.categorie }));
-  for (const url of e.lien) {
-    bas.append(el("a", { classe: "regarder", href: url, target: "_blank", rel: "noopener", texte: nomLien(url, e) }));
+  const vus = new Set();
+  for (const x of s) {
+    for (const url of x.lien) {
+      if (vus.has(url)) continue;
+      vus.add(url);
+      bas.append(el("a", { classe: "regarder", href: url, target: "_blank", rel: "noopener",
+        texte: libelleLien(url, x, s.length > 1) }));
+    }
   }
   return el("article", {
     classe: ["carte", CLASSE_CATEGORIE[e.categorie] || "", direct ? "en-direct" : "", fini ? "termine" : ""].join(" "),
