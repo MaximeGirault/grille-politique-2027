@@ -96,7 +96,8 @@ def _ligne_html(e: dict, avec_jour: bool = False) -> str:
         titre = f'<a href="{html.escape(e["lien"][0])}" style="color:#1f3a5f">{titre}</a>'
     invites = f'<div style="color:#5b6470;font-size:13px">Avec {html.escape(", ".join(e["invites"]))}</div>' if e["invites"] else ""
     # Émission fusionnée : un lien par autre diffuseur, sous le titre.
-    autres = [f'<a href="{html.escape(src["lien"][0])}" style="color:#1f3a5f">{html.escape(src["chaine"])}</a>'
+    autres = [f'<a href="{html.escape(src["lien"][0])}" style="color:#1f3a5f">{html.escape(src["chaine"])}'
+              + (f' ({html.escape(src["precision"])})' if src.get("precision") else "") + "</a>"
               for src in (e.get("sources") or [])[1:] if src["lien"]]
     if autres:
         invites += f'<div style="font-size:13px">Aussi sur {" · ".join(autres)}</div>'

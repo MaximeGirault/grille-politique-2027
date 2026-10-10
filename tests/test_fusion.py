@@ -58,6 +58,19 @@ def test_titres():
     assert not fusion.meme_titre("Questions au gouvernement", "Questions politiques")
 
 
+def test_precision_des_versions():
+    a = emission("youtube:5", "Meeting de Jean-Luc Mélenchon à Clermont-Ferrand", "2027-03-28T15:00:00+02:00",
+                 "youtube", "Jean-Luc Mélenchon", ["https://www.youtube.com/watch?v=a"])
+    b = emission("youtube:6", "Meeting de Jean-Luc Mélenchon à Clermont-Ferrand - Vélotypie et LSF",
+                 "2027-03-28T15:00:00+02:00", "youtube", "La France insoumise", ["https://www.youtube.com/watch?v=b"])
+    (f,) = fusion.fusionner([b, a])
+    assert [(s["chaine"], s["precision"]) for s in f["sources"]] == [
+        ("Jean-Luc Mélenchon", ""), ("La France insoumise", "Vélotypie et LSF")]
+    # Sans séparateur, la suite du titre n'est pas une version particulière.
+    assert fusion.precision("Questions au Gouvernement à l'Assemblée", "Questions au gouvernement") == ""
+    assert fusion.precision("Face à face (rediffusion)", "Face à face") == "rediffusion"
+
+
 def test_invites_et_filtre_reunis():
     a = emission("tv:1", "Franc-jeu", "2027-03-28T13:20:00+02:00", "tv", "France 2", [], invites=[])
     b = emission("youtube:4", "Franc-jeu avec Gabriel Attal", "2027-03-28T13:21:00+02:00", "youtube", "franceinfo",

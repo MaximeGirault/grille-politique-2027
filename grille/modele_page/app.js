@@ -128,7 +128,10 @@ function nomLien(url, e) {
 function libelleLien(url, source, plusieurs) {
   const nom = nomLien(url, source);
   // Plusieurs diffuseurs : préciser lequel (« YouTube · La France insoumise »).
-  return plusieurs && !nom.includes(source.chaine) && !nom.includes("LCP") ? nom + " · " + source.chaine : nom;
+  let libelle = plusieurs && !nom.includes(source.chaine) && !nom.includes("LCP") ? nom + " · " + source.chaine : nom;
+  // Version particulière de la même diffusion (« Vélotypie et LSF »).
+  if (source.precision) libelle += " · " + source.precision;
+  return libelle;
 }
 
 function carte(e, maintenant) {
