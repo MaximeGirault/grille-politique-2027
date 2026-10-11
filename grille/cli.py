@@ -133,6 +133,11 @@ def _etape_tv(conf, connexion, maintenant, args) -> bool:
 def _etape_radio(conf, connexion, maintenant, args) -> bool:
     print("Radio France :")
     rapport = radio.collecter(conf, requests.Session(), connexion, maintenant)
+    if rapport.interrompu == radio.SANS_CLE:
+        # Clé demandée mais pas encore reçue : une ligne de rappel dans l'email, pas une panne.
+        print(f"  en attente : {rapport.interrompu}")
+        db.noter_collecte(connexion, "radio", maintenant, True, 0, ["clé Radio France pas encore en place"])
+        return True
     db.noter_collecte(connexion, "radio", maintenant, not rapport.interrompu, len(rapport.retenues),
                       rapport.anomalies, rapport.interrompu)
     if rapport.interrompu:
