@@ -1,43 +1,44 @@
-"""Sonde temporaire (lot 6) : liens d'agenda depuis les pages d'accueil ; structure RN et UPR."""
+"""Sonde temporaire (lot 6) : structure des pages d'agenda trouvées."""
+import json
 import re
 
 import requests
 
 EN_TETES = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) "
             "Version/17.0 Safari/605.1.15", "Accept-Language": "fr-FR,fr;q=0.9"}
-ACCUEILS = ["https://lafranceinsoumise.fr/", "https://melenchon.fr/", "https://parti-renaissance.fr/",
-            "https://republicains.fr/", "https://horizonsleparti.fr/", "https://www.parti-reconquete.fr/",
-            "https://lesecologistes.fr/", "https://www.lutte-ouvriere.org/", "https://www.debout-la-france.fr/",
-            "https://www.revolutionpermanente.fr/", "https://placepublique.fr/", "https://www.placepublique.eu/",
-            "https://www.les-patriotes.fr/", "https://www.francoisruffin.fr/", "https://www.parti-socialiste.fr/",
-            "https://www.ensemble-ensemble.fr/", "https://www.reconquete.app/", "https://www.zemmour2027.fr/",
-            "https://www.attal2027.fr/", "https://www.gabrielattal.fr/", "https://www.edouardphilippe.fr/",
-            "https://www.marine2027.fr/", "https://www.retailleau2027.fr/", "https://www.melenchon2027.fr/",
-            "https://www.lisnard2027.fr/", "https://www.nouvelleenergie.fr/", "https://debout.fr/"]
+PAGES = ["https://rassemblementnational.fr/agenda", "https://upr.fr/agenda",
+         "https://horizonsleparti.fr/category/agenda/", "https://horizonsleparti.fr/categorie-evenement/evenement-du-parti/",
+         "https://www.ericzemmour.fr/agenda", "https://actionpopulaire.fr/agenda/national/",
+         "https://utilisateur.parti-renaissance.fr/grand-rassemblement",
+         "https://utilisateur.parti-renaissance.fr/grand-rassemblement/meeting-regional-lyon",
+         "https://www.lisnard2027.fr/agenda", "https://gabrielattal.fr/agenda", "https://www.edouardphilippe.fr/agenda"]
+DATE = re.compile(r"(?i)\b\d{1,2}(?:er)?\s*(?:&nbsp;)?\s*(?:janv|févr|fevr|mars|avr|mai|juin|juil|août|aout|sept|oct|nov|déc|dec)")
 
-
-def get(url):
+for url in PAGES:
+    print("=" * 90)
     try:
-        return requests.get(url, headers=EN_TETES, timeout=20)
+        r = requests.get(url, headers=EN_TETES, timeout=25)
     except requests.RequestException as e:
-        print("  ERREUR", type(e).__name__, str(e)[:120])
-
-
-for url in ACCUEILS:
-    print("=" * 80)
-    print(url)
-    r = get(url)
-    if r is None:
+        print(url, "ERREUR", type(e).__name__, str(e)[:120])
         continue
-    t = re.search(r"(?is)<title>(.*?)</title>", r.text)
-    print(f"  HTTP {r.status_code} → {r.url} ; titre : {(t.group(1).strip()[:80] if t else '-')}")
-    liens = sorted(set(re.findall(r'href="([^"#]*(?:agenda|evenement|événement|event|meeting|rendez-vous|rdv)[^"]*)"', r.text, re.I)))
-    print("  liens agenda :", liens[:12])
-
-for url, motif in (("https://rassemblementnational.fr/agenda", "Agenda"), ("https://upr.fr/agenda", "Voir l")):
-    print("=" * 80)
-    r = get(url)
+    r.encoding = r.apparent_encoding if r.encoding in (None, "ISO-8859-1") else r.encoding
     h = r.text
-    i = h.find(">" + motif) if motif == "Agenda" else h.find(motif)
-    print(url, "HTTP", r.status_code, "encodage", r.encoding, r.apparent_encoding, "; position", i)
-    print(h[max(0, i - 2500): i + 4500])
+    print(url, "→ HTTP", r.status_code, r.url, len(h), "car.")
+    dp = re.search(r'data-page="([^"]+)"', h)
+    if dp:
+        import html as H
+        donnees = H.unescape(dp.group(1))
+        print("  data-page (Inertia) :", donnees[:3000])
+    nx = re.search(r'(?is)<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', h)
+    if nx:
+        print("  __NEXT_DATA__ :", nx.group(1)[:3000])
+    for bloc in re.findall(r'(?is)<script[^>]+application/ld\+json[^>]*>(.*?)</script>', h)[:3]:
+        if "Event" in bloc:
+            print("  JSON-LD Event :", bloc.strip()[:1500])
+    corps = re.sub(r"(?is)<(script|style|svg|head)[^>]*>.*?</\1>", " ", h)
+    m = DATE.search(corps)
+    if m:
+        print("  --- HTML brut autour de la première date ---")
+        print(re.sub(r"\n\s*\n+", "\n", corps[max(0, m.start() - 1500): m.start() + 3500]))
+    else:
+        print("  aucune date ; texte :", re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", corps))[:600])
