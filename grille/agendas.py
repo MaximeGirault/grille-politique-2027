@@ -85,10 +85,11 @@ def lire_upr(contenu: str, adresse: str, aujourdhui: date) -> list[RendezVous]:
     resultat = []
     for section in re.finditer(r'(?s)<section[^>]*data-agenda-month[^>]*id="(?P<an>\d{4})-(?P<mois>\d{2})"(?P<corps>.*?)'
                                r'(?=<section[^>]*data-agenda-month|$)', contenu):
-        for carte in re.finditer(r'(?s)<article class="AgendaEventCard".*?</article>', section["corps"]):
+        for carte in re.finditer(r'(?s)<article class="AgendaEventCard"[^>]*>.*?</article>', section["corps"]):
             c = carte.group(0)
-            jour = re.search(r'AgendaEventCard__day">\s*(\d{1,2})', c)
-            titre = re.search(r"(?s)<h3>(.*?)</h3>", c)
+            # Le site ajoute des attributs techniques (data-astro-cid-…) à chaque balise.
+            jour = re.search(r'AgendaEventCard__day"[^>]*>\s*(\d{1,2})', c)
+            titre = re.search(r"(?s)<h3[^>]*>(.*?)</h3>", c)
             if not (jour and titre):
                 continue
             heures = re.findall(r"(\d{1,2}):(\d{2})", _texte(re.search(r'(?s)AgendaEventCard__meta.*?</div>', c).group(0))
@@ -96,8 +97,8 @@ def lire_upr(contenu: str, adresse: str, aujourdhui: date) -> list[RendezVous]:
             jour_j = date(int(section["an"]), int(section["mois"]), int(jour.group(1)))
             debut = datetime.combine(jour_j, time(*map(int, heures[0])) if heures else time(0, 0), PARIS)
             fin = datetime.combine(jour_j, time(*map(int, heures[1])), PARIS) if len(heures) > 1 else None
-            description = re.search(r'(?s)AgendaEventCard__description">(.*?)</p>', c)
-            lien = re.search(r'AgendaEventCard__cta" href="([^"]+)"', c)
+            description = re.search(r'(?s)AgendaEventCard__description"[^>]*>(.*?)</p>', c)
+            lien = re.search(r'AgendaEventCard__cta"[^>]*?href="([^"]+)"', c)
             resultat.append(RendezVous(_texte(titre.group(1)), debut, fin, _texte(description.group(1) if description else ""),
                                        urljoin(adresse, lien.group(1)) if lien else adresse))
     if not resultat and "AgendaEventCard" not in contenu and "data-agenda-month" not in contenu:
