@@ -3,7 +3,7 @@ name: Sonde temporaire
 on:
   push:
     branches: [claude/busy-cerf-497c8s]
-    paths: [".github/sonde/**", ".github/workflows/sonde.yml"]
+    paths: [".github/sonde/**", ".github/workflows/sonde.yml", "grille/agendas.py"]
 permissions:
   contents: read
 jobs:
